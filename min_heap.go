@@ -7,26 +7,26 @@ import (
 
 type MinHeap struct {
 	Length int
-	Data   []Message
+	Data   []Item
 }
 
 func NewMinHeap() *MinHeap {
 	var m MinHeap
 	m.Length = 0
-	m.Data = []Message{}
+	m.Data = []Item{}
 	return &m
 }
 
-func (m *MinHeap) Insert(msg Message) {
+func (m *MinHeap) Insert(msg Item) {
 	m.Data = append(m.Data, msg)
 	m.heapifyUp(m.Length)
 	m.Length++
 }
 
-func (m *MinHeap) Poll() (Message, error) {
+func (m *MinHeap) Poll() (Item, error) {
 	if m.Length == 0 {
 		fmt.Println("ha")
-		return Message{}, errors.New("Cant poll. No item")
+		return Item{}, errors.New("Cant poll. No item")
 	}
 
 	out := m.Data[0]
@@ -34,7 +34,7 @@ func (m *MinHeap) Poll() (Message, error) {
 
 	if m.Length == 0 {
 		out := m.Data[0]
-		m.Data = []Message{}
+		m.Data = []Item{}
 		return out, nil
 	}
 

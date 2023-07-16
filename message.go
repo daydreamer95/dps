@@ -1,5 +1,5 @@
 package main
 
-type Message struct {
+type Item struct {
 	Priority int32
 }
