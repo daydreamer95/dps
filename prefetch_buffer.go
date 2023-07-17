@@ -1,22 +1,39 @@
 package main
 
-import "go.uber.org/zap"
+import (
+	"context"
+	"go.uber.org/zap"
+)
 
 type PrefetchBuffer struct {
+	ctx           context.Context
 	logger        *zap.Logger
 	msgIn         chan<- Item
 	msgInProgress chan<- Item
-	inMemPq       MinHeap
+	inMemPq       *MinHeap
 }
 
-func NewPrefetchBuffer(logger *zap.Logger) *PrefetchBuffer {
-	p := &PrefetchBuffer{
-		logger: logger,
-	}
+func NewPrefetchBuffer(ctx context.Context,
+	logger *zap.Logger) *PrefetchBuffer {
 	cIn := make(chan Item)
 	cInProgress := make(chan Item)
-	p.msgIn = cIn
-	p.msgInProgress = cInProgress
+	p := &PrefetchBuffer{
+		ctx:           ctx,
+		logger:        logger,
+		msgIn:         cIn,
+		msgInProgress: cInProgress,
+	}
+	p.inMemPq = NewMinHeap()
 	p.logger.Info("Starting PrefetchBuffer. Ready to serve!")
 	return p
+}
+
+func (p *PrefetchBuffer) Start() {
+	worker := NewDequeueWorker(p.ctx, p.logger)
+	go func() {
+		worker.Start()
+		for i := range worker.dequeuedChan {
+			p.inMemPq.Insert(i)
+		}
+	}()
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"go.uber.org/zap"
 	"os"
@@ -9,13 +10,14 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	logger, _ := zap.NewProduction()
 	defer logger.Sync() // flushes buffer, if any
 	sugar := logger.Sugar()
 	sugar.Infof("Start application")
 
-	p := NewPrefetchBuffer(logger)
-	fmt.Println(p)
+	p := NewPrefetchBuffer(ctx, logger)
+	p.Start()
 
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
