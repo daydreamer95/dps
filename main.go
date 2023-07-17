@@ -1,30 +1,30 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"go.uber.org/zap"
+	"os"
+	"os/signal"
+	"syscall"
+)
 
 func main() {
+	logger, _ := zap.NewProduction()
+	defer logger.Sync() // flushes buffer, if any
+	sugar := logger.Sugar()
+	sugar.Infof("Start application")
 
-	heap := NewMinHeap()
+	p := NewPrefetchBuffer(logger)
+	fmt.Println(p)
 
-	heap.Insert(Item{Priority: 2})
-	heap.Insert(Item{Priority: 3})
-	heap.Insert(Item{Priority: 30})
-	heap.Insert(Item{Priority: 8})
-	heap.Insert(Item{Priority: 4})
-	heap.Insert(Item{Priority: 6})
-	heap.Insert(Item{Priority: 15})
-	heap.Insert(Item{Priority: 5})
-	heap.Insert(Item{Priority: 7})
-	heap.Insert(Item{Priority: 0})
-
-	fmt.Println("HEAP:", heap.Data)
-
-	poll, err := heap.Poll()
-	if err != nil {
-		fmt.Println("Error poll:", err)
-		return
-	}
-	fmt.Println("Poll message:", poll)
-	fmt.Println("HEAP:", heap.Data)
-
+	c := make(chan os.Signal)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-c
+		os.Exit(1)
+	}()
+	sig := <-c
+	logger.Info(fmt.Sprintf("Caught signal %v", sig))
+	// shutdown other goroutines gracefully
+	// close other resources
 }
