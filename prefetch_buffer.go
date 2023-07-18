@@ -8,19 +8,16 @@ import (
 type PrefetchBuffer struct {
 	ctx           context.Context
 	logger        *zap.Logger
-	msgIn         chan<- Item
 	msgInProgress chan<- Item
 	inMemPq       *MinHeap
 }
 
 func NewPrefetchBuffer(ctx context.Context,
 	logger *zap.Logger) *PrefetchBuffer {
-	cIn := make(chan Item)
 	cInProgress := make(chan Item)
 	p := &PrefetchBuffer{
 		ctx:           ctx,
 		logger:        logger,
-		msgIn:         cIn,
 		msgInProgress: cInProgress,
 	}
 	p.inMemPq = NewMinHeap()

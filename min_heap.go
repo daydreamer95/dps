@@ -3,9 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sync"
 )
 
 type MinHeap struct {
+	mu     sync.Mutex
 	Length int
 	Data   []Item
 }
@@ -18,12 +20,18 @@ func NewMinHeap() *MinHeap {
 }
 
 func (m *MinHeap) Insert(msg Item) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	m.Data = append(m.Data, msg)
 	m.heapifyUp(m.Length)
 	m.Length++
 }
 
 func (m *MinHeap) Poll() (Item, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	if m.Length == 0 {
 		fmt.Println("ha")
 		return Item{}, errors.New("Cant poll. No item")
