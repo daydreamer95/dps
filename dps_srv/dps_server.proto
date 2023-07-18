@@ -1,0 +1,57 @@
+syntax = "proto3";
+package dps_srv;
+option go_package = "./dps_srv";
+// protoc --go_out=. --go_opt=paths=source_relative  --go-grpc_out=. --go-grpc_opt=paths=source_relative ./dps_server.proto
+
+message CreateTopicReq {
+  string TopicName = 1;
+}
+
+message CommonRes {
+  int32 Status = 1;
+  string Message = 2;
+}
+
+message PublishReq {
+  Item item = 1;
+}
+
+message PublishRes {
+  int32 Status = 1;
+  string Message = 2;
+}
+
+message Item {
+  string Topic = 1;
+  int32 Priority = 2; // Lower number mean higher priority
+  bytes Payload = 3; // immutable binary blob. Feel free to put what ever u want
+  bytes Metadata = 4; // mutable binary blob. Feel free to put what ever u want
+  int32 DeliverAfter = 5; // Timestamp where item should be dequeue
+  string DpsAssignedUniqueId = 6;
+}
+
+message DequeueReq {
+  map<string,int32> DequeueTopic = 1;
+}
+
+message DequeueRes {
+  repeated Item items = 1;
+}
+
+message AckReq {
+  string Topic = 1;
+  string DpsAssignedUniqueId = 2;
+}
+
+message NAckReq {
+  string Topic = 1;
+  string DpsAssignedUniqueId = 2;
+}
+
+service DpsService {
+  rpc Publish(PublishReq) returns (PublishRes) {}
+  rpc CreateTopic(CreateTopicReq) returns (CommonRes) {}
+  rpc Dequeue(DequeueReq) returns (DequeueRes) {}
+  rpc Ack(AckReq) returns (CommonRes) {}
+  rpc NAck(NAckReq) returns (CommonRes) {}
+}
