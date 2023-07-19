@@ -14,8 +14,10 @@ func main() {
 	ctx := context.Background()
 	logger.Info("Start application")
 
-	p := NewPrefetchBuffer(ctx)
-	p.Start()
+	ctc := make(chan string)
+	d := make(chan Item)
+	r := NewReplenishesWorker(ctx, ctc, d)
+	r.Start()
 
 	srv := dps_srv.NewGrpcServer()
 	go srv.StartListenAndServer()

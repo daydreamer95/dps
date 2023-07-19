@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 )
 
@@ -33,7 +32,7 @@ func (m *MinHeap) Poll() (Item, error) {
 	defer m.mu.Unlock()
 
 	if m.Length == 0 {
-		fmt.Println("ha")
+		//fmt.Println("ha")
 		return Item{}, errors.New("Cant poll. No item")
 	}
 
@@ -46,7 +45,7 @@ func (m *MinHeap) Poll() (Item, error) {
 		return out, nil
 	}
 
-	fmt.Println("Poll m.Data[m.Length:", m.Data[m.Length])
+	//fmt.Println("Poll m.Data[m.Length:", m.Data[m.Length])
 	m.Data[0] = m.Data[m.Length]
 	m.Data = m.Data[0:m.Length]
 	m.heapifyDown(0)
@@ -89,10 +88,10 @@ func (m *MinHeap) heapifyUp(index int) {
 	parentV := m.Data[p]
 	v := m.Data[index]
 
-	fmt.Printf("Compare %v > %v at pIndex %v and index %v? \n", parentV.Priority, v.Priority, p, index)
+	//fmt.Printf("Compare %v > %v at pIndex %v and index %v? \n", parentV.Priority, v.Priority, p, index)
 	if parentV.Priority > v.Priority {
-		fmt.Println("Parent value:", parentV)
-		fmt.Println("Index value:", v)
+		//fmt.Println("Parent value:", parentV)
+		//fmt.Println("Index value:", v)
 
 		m.Data[index] = parentV
 		m.Data[p] = v
