@@ -30,9 +30,10 @@ func (r *ReplenishesWorker) Start() {
 	logger.Info("Replenishes_Worker start!")
 	t := getActiveTopics()
 
-	for _, topics := range t {
+	for _, topic := range t {
+		logger.Info(fmt.Sprintf("Init prefetch buffer topicname [%v]", topic))
 		pb := NewPrefetchBuffer(r.ctx)
-		r.preBuffers[topics] = pb
+		r.preBuffers[topic] = pb
 		go pb.Start()
 	}
 
@@ -40,11 +41,16 @@ func (r *ReplenishesWorker) Start() {
 	for {
 		select {
 		case newTopics := <-r.createTopicChan:
+			logger.Info(fmt.Sprintf("Receive new topic from chan [%v]", newTopics))
 			topic := r.preBuffers[newTopics]
 			if topic != nil {
-				logger.Fatal(fmt.Sprintf("Topics name [%v] already exists. Something wrong"))
+				logger.Fatal(fmt.Sprintf("Topics name [%v] already exists. Something wrong", topic))
 				return
 			}
+			logger.Info(fmt.Sprintf("Init prefetch buffer topicname [%v]", newTopics))
+			pb := NewPrefetchBuffer(r.ctx)
+			r.preBuffers[newTopics] = pb
+			go pb.Start()
 		case deferItem := <-r.deferItemChan:
 			logger.Info(fmt.Sprintf("An item has defered [%+v]", deferItem))
 			return

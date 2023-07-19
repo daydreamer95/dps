@@ -6,16 +6,13 @@ import (
 )
 
 type PrefetchBuffer struct {
-	ctx           context.Context
-	msgInProgress chan<- Item
-	inMemPq       *MinHeap
+	ctx     context.Context
+	inMemPq *MinHeap
 }
 
 func NewPrefetchBuffer(ctx context.Context) *PrefetchBuffer {
-	cInProgress := make(chan Item)
 	p := &PrefetchBuffer{
-		ctx:           ctx,
-		msgInProgress: cInProgress,
+		ctx: ctx,
 	}
 	p.inMemPq = NewMinHeap()
 	logger.Info("Starting PrefetchBuffer. Ready to serve!")

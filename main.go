@@ -12,15 +12,15 @@ import (
 
 func main() {
 	ctx := context.Background()
-	logger.Info("Start application")
 
 	ctc := make(chan string)
 	d := make(chan Item)
 	r := NewReplenishesWorker(ctx, ctc, d)
-	r.Start()
+	go r.Start()
 
 	srv := dps_srv.NewGrpcServer()
 	go srv.StartListenAndServer()
+	ctc <- "huy"
 
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
