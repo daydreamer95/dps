@@ -20,7 +20,6 @@ func main() {
 
 	srv := dps_srv.NewGrpcServer()
 	go srv.StartListenAndServer()
-	ctc <- "huy"
 
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)

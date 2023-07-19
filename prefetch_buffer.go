@@ -6,13 +6,15 @@ import (
 )
 
 type PrefetchBuffer struct {
-	ctx     context.Context
-	inMemPq *MinHeap
+	ctx       context.Context
+	topicName string
+	inMemPq   *MinHeap
 }
 
-func NewPrefetchBuffer(ctx context.Context) *PrefetchBuffer {
+func NewPrefetchBuffer(ctx context.Context, topicName string) *PrefetchBuffer {
 	p := &PrefetchBuffer{
-		ctx: ctx,
+		ctx:       ctx,
+		topicName: topicName,
 	}
 	p.inMemPq = NewMinHeap()
 	logger.Info("Starting PrefetchBuffer. Ready to serve!")

@@ -10,7 +10,6 @@ type ReplenishesWorker struct {
 	ctx             context.Context
 	createTopicChan chan string
 	deferItemChan   chan Item
-	activeTopics    []string
 	preBuffers      map[string]*PrefetchBuffer
 }
 
@@ -32,7 +31,7 @@ func (r *ReplenishesWorker) Start() {
 
 	for _, topic := range t {
 		logger.Info(fmt.Sprintf("Init prefetch buffer topicname [%v]", topic))
-		pb := NewPrefetchBuffer(r.ctx)
+		pb := NewPrefetchBuffer(r.ctx, topic)
 		r.preBuffers[topic] = pb
 		go pb.Start()
 	}
@@ -48,11 +47,12 @@ func (r *ReplenishesWorker) Start() {
 				return
 			}
 			logger.Info(fmt.Sprintf("Init prefetch buffer topicname [%v]", newTopics))
-			pb := NewPrefetchBuffer(r.ctx)
+			pb := NewPrefetchBuffer(r.ctx, newTopics)
 			r.preBuffers[newTopics] = pb
 			go pb.Start()
 		case deferItem := <-r.deferItemChan:
 			logger.Info(fmt.Sprintf("An item has defered [%+v]", deferItem))
+			//TODO: do this
 			return
 		}
 	}
