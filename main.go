@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"dps/dps_srv"
 	"dps/logger"
 	"fmt"
 	"os"
@@ -15,6 +16,9 @@ func main() {
 
 	p := NewPrefetchBuffer(ctx)
 	p.Start()
+
+	srv := dps_srv.NewGrpcServer()
+	go srv.StartListenAndServer()
 
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)

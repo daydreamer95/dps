@@ -82,7 +82,7 @@ func (c *dpsServiceClient) NAck(ctx context.Context, in *NAckReq, opts ...grpc.C
 	return out, nil
 }
 
-// DpsServiceServer is the server API for DpsService service.
+// DpsServiceServer is the grpcSrv API for DpsService service.
 // All implementations must embed UnimplementedDpsServiceServer
 // for forward compatibility
 type DpsServiceServer interface {
