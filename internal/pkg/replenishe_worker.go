@@ -1,13 +1,25 @@
-package main
+package pkg
 
 import (
 	"context"
-	"dps/logger"
+	"dps/internal/pkg/dto"
+	"dps/internal/pkg/logger"
 	"fmt"
+	"sync"
 )
+
+type IReplenishsesWorker interface {
+	Start()
+	Push(req []dto.PopItemRequest) (bool, error)
+
+	//Pop Get item responding to request dto. Simply get items from
+	// prefetch buffers and returns
+	Pop(req dto.PopItemRequest) ([]Item, error)
+}
 
 type ReplenishesWorker struct {
 	ctx             context.Context
+	mu              sync.Mutex
 	createTopicChan chan string
 	deferItemChan   chan Item
 	preBuffers      map[string]*PrefetchBuffer
@@ -40,6 +52,7 @@ func (r *ReplenishesWorker) Start() {
 	for {
 		select {
 		case newTopics := <-r.createTopicChan:
+			r.mu.Lock()
 			logger.Info(fmt.Sprintf("Receive new topic from chan [%v]", newTopics))
 			topic := r.preBuffers[newTopics]
 			if topic != nil {
@@ -50,12 +63,21 @@ func (r *ReplenishesWorker) Start() {
 			pb := NewPrefetchBuffer(r.ctx, newTopics)
 			r.preBuffers[newTopics] = pb
 			go pb.Start()
+			r.mu.Unlock()
 		case deferItem := <-r.deferItemChan:
 			logger.Info(fmt.Sprintf("An item has defered [%+v]", deferItem))
 			//TODO: do this
 			return
 		}
 	}
+}
+
+func (r *ReplenishesWorker) Push(req []dto.PopItemRequest) (bool, error) {
+	return false, nil
+}
+
+func (r *ReplenishesWorker) Pop(req dto.PopItemRequest) ([]Item, error) {
+	return nil, nil
 }
 
 // getActiveTopics Return topics name

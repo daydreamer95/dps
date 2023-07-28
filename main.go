@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"dps/dps_srv"
-	"dps/logger"
+	"dps/internal/pkg"
+	"dps/internal/pkg/dps_srv"
+	"dps/internal/pkg/logger"
 	"fmt"
 	"os"
 	"os/signal"
@@ -14,11 +15,12 @@ func main() {
 	ctx := context.Background()
 
 	ctc := make(chan string)
-	d := make(chan Item)
-	r := NewReplenishesWorker(ctx, ctc, d)
+	d := make(chan pkg.Item)
+	var r pkg.IReplenishsesWorker
+	r = pkg.NewReplenishesWorker(ctx, ctc, d)
 	go r.Start()
 
-	srv := dps_srv.NewGrpcServer()
+	srv := dps_srv.NewGrpcServer(&r)
 	go srv.StartListenAndServer()
 
 	c := make(chan os.Signal)

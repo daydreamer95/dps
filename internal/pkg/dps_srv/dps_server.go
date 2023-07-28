@@ -1,7 +1,8 @@
 package dps_srv
 
 import (
-	"dps/logger"
+	"dps/internal/pkg"
+	"dps/internal/pkg/logger"
 	"fmt"
 	"google.golang.org/grpc"
 	"net"
@@ -11,11 +12,11 @@ type DpsServer struct {
 	grpcSrv *grpc.Server
 }
 
-func NewGrpcServer() *DpsServer {
+func NewGrpcServer(rpw *pkg.IReplenishsesWorker) *DpsServer {
 	out := &DpsServer{}
 	var opts []grpc.ServerOption
 	out.grpcSrv = grpc.NewServer(opts...)
-	RegisterDpsServiceServer(out.grpcSrv, NewRouterGrpc())
+	RegisterDpsServiceServer(out.grpcSrv, NewRouterGrpc(rpw))
 	return out
 }
 
@@ -28,7 +29,7 @@ func (d *DpsServer) StartListenAndServer() {
 	go func() {
 		err := d.grpcSrv.Serve(lis)
 		if err != nil {
-			logger.Fatal(fmt.Sprintf("Error start grpc detail:%v", err))
+			logger.Fatal(fmt.Sprintf("Error start grpc detail: [%v]", err))
 		}
 	}()
 	logger.Info(fmt.Sprintf("Success start grpc on port [%v]", port))

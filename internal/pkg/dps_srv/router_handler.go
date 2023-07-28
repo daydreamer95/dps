@@ -2,14 +2,18 @@ package dps_srv
 
 import (
 	"context"
+	"dps/internal/pkg"
 )
 
 type RouterGrpc struct {
 	UnimplementedDpsServiceServer
+	rpw *pkg.IReplenishsesWorker
 }
 
-func NewRouterGrpc() *RouterGrpc {
-	return &RouterGrpc{}
+func NewRouterGrpc(rpw *pkg.IReplenishsesWorker) *RouterGrpc {
+	return &RouterGrpc{
+		rpw: rpw,
+	}
 }
 
 func (d *RouterGrpc) Publish(context.Context, *PublishReq) (*PublishRes, error) {
