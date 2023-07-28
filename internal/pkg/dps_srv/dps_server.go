@@ -12,7 +12,7 @@ type DpsServer struct {
 	grpcSrv *grpc.Server
 }
 
-func NewGrpcServer(rpw *pkg.IReplenishsesWorker) *DpsServer {
+func NewGrpcServer(rpw pkg.IReplenishsesWorker) *DpsServer {
 	out := &DpsServer{}
 	var opts []grpc.ServerOption
 	out.grpcSrv = grpc.NewServer(opts...)

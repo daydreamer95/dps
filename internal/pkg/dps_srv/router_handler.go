@@ -7,10 +7,10 @@ import (
 
 type RouterGrpc struct {
 	UnimplementedDpsServiceServer
-	rpw *pkg.IReplenishsesWorker
+	rpw pkg.IReplenishsesWorker
 }
 
-func NewRouterGrpc(rpw *pkg.IReplenishsesWorker) *RouterGrpc {
+func NewRouterGrpc(rpw pkg.IReplenishsesWorker) *RouterGrpc {
 	return &RouterGrpc{
 		rpw: rpw,
 	}
@@ -23,7 +23,7 @@ func (d *RouterGrpc) Publish(context.Context, *PublishReq) (*PublishRes, error) 
 func (d *RouterGrpc) CreateTopic(context.Context, *CreateTopicReq) (*CommonRes, error) {
 	return nil, nil
 }
-func (d *RouterGrpc) Dequeue(context.Context, *DequeueReq) (*DequeueRes, error) {
+func (d *RouterGrpc) Dequeue(ctx context.Context, req *DequeueReq) (*DequeueRes, error) {
 	return nil, nil
 }
 

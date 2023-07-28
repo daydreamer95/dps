@@ -20,7 +20,7 @@ func main() {
 	r = pkg.NewReplenishesWorker(ctx, ctc, d)
 	go r.Start()
 
-	srv := dps_srv.NewGrpcServer(&r)
+	srv := dps_srv.NewGrpcServer(r)
 	go srv.StartListenAndServer()
 
 	c := make(chan os.Signal)

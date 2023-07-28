@@ -10,7 +10,7 @@ import (
 
 type IReplenishsesWorker interface {
 	Start()
-	Push(req []dto.PopItemRequest) (bool, error)
+	Push(req []dto.PushItemRequest) (bool, error)
 
 	//Pop Get item responding to request dto. Simply get items from
 	// prefetch buffers and returns
@@ -72,7 +72,7 @@ func (r *ReplenishesWorker) Start() {
 	}
 }
 
-func (r *ReplenishesWorker) Push(req []dto.PopItemRequest) (bool, error) {
+func (r *ReplenishesWorker) Push(req []dto.PushItemRequest) (bool, error) {
 	return false, nil
 }
 
