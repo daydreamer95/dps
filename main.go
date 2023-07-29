@@ -4,6 +4,7 @@ import (
 	"context"
 	"dps/internal/pkg"
 	"dps/internal/pkg/dps_srv"
+	"dps/internal/pkg/entity"
 	"dps/internal/pkg/logger"
 	"dps/internal/pkg/repository"
 	"fmt"
@@ -28,7 +29,7 @@ func main() {
 	topicRepo := repository.NewTopicRepository(db)
 
 	ctc := make(chan string)
-	d := make(chan pkg.Item)
+	d := make(chan entity.Item)
 	var r pkg.IReplenishsesWorker
 	r = pkg.NewReplenishesWorker(ctx, ctc, d)
 	go r.Start()

@@ -1,8 +1,10 @@
 package dto
 
-import "dps/internal/pkg"
+import (
+	"dps/internal/pkg/entity"
+)
 
 type PushItemRequest struct {
-	TopicName string     `json:"topic_name"`
-	Items     []pkg.Item `json:"items"`
+	TopicName string        `json:"topic_name"`
+	Items     []entity.Item `json:"items"`
 }
