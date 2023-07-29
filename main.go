@@ -6,6 +6,7 @@ import (
 	"dps/internal/pkg/dps_srv"
 	"dps/internal/pkg/logger"
 	"fmt"
+	"github.com/joho/godotenv"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,6 +14,10 @@ import (
 
 func main() {
 	ctx := context.Background()
+	err := godotenv.Load(".env")
+	if err != nil {
+		logger.Fatal(fmt.Sprint("Error load env file: ", err))
+	}
 
 	ctc := make(chan string)
 	d := make(chan pkg.Item)
