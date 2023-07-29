@@ -3,16 +3,23 @@ package dps_srv
 import (
 	"context"
 	"dps/internal/pkg"
+	"dps/internal/pkg/repository"
 )
 
 type RouterGrpc struct {
 	UnimplementedDpsServiceServer
-	rpw pkg.IReplenishsesWorker
+	rpw       pkg.IReplenishsesWorker
+	itemRepo  *repository.ItemRepository
+	topicRepo *repository.TopicRepository
 }
 
-func NewRouterGrpc(rpw pkg.IReplenishsesWorker) *RouterGrpc {
+func NewRouterGrpc(rpw pkg.IReplenishsesWorker,
+	itemRepository *repository.ItemRepository,
+	topicRepository *repository.TopicRepository) *RouterGrpc {
 	return &RouterGrpc{
-		rpw: rpw,
+		rpw:       rpw,
+		itemRepo:  itemRepository,
+		topicRepo: topicRepository,
 	}
 }
 

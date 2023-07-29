@@ -5,6 +5,7 @@ import (
 	"dps/internal/pkg"
 	"dps/internal/pkg/dps_srv"
 	"dps/internal/pkg/logger"
+	"dps/internal/pkg/repository"
 	"fmt"
 	"github.com/joho/godotenv"
 	"os"
@@ -19,13 +20,20 @@ func main() {
 		logger.Fatal(fmt.Sprint("Error load env file: ", err))
 	}
 
+	db, err := pkg.NewMySqlDb()
+	if err != nil {
+		logger.Fatal(fmt.Sprint("Error connect to db: ", err))
+	}
+	itemRepo := repository.NewItemRepository(db)
+	topicRepo := repository.NewTopicRepository(db)
+
 	ctc := make(chan string)
 	d := make(chan pkg.Item)
 	var r pkg.IReplenishsesWorker
 	r = pkg.NewReplenishesWorker(ctx, ctc, d)
 	go r.Start()
 
-	srv := dps_srv.NewGrpcServer(r)
+	srv := dps_srv.NewGrpcServer(r, itemRepo, topicRepo)
 	go srv.StartListenAndServer()
 
 	c := make(chan os.Signal)
