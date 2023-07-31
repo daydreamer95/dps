@@ -2,6 +2,7 @@ package dps_pb
 
 import (
 	"dps/internal/pkg"
+	"dps/internal/pkg/config"
 	"dps/logger"
 	"fmt"
 	"google.golang.org/grpc"
@@ -21,8 +22,8 @@ func NewGrpcServer(rpw pkg.IReplenishsesWorker) *DpsServer {
 }
 
 func (d *DpsServer) StartListenAndServer() {
-	port := 8080
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	port := config.Config.App.Port
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", config.Config.App.Host, port))
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("failed to listen: %v casue err [%v]", port, err))
 	}

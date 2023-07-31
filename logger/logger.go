@@ -3,6 +3,8 @@ package logger
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"log"
+	"runtime/debug"
 )
 
 var zapLog *zap.Logger
@@ -35,4 +37,18 @@ func Error(message string, fields ...zap.Field) {
 
 func Fatal(message string, fields ...zap.Field) {
 	zapLog.Fatal(message, fields...)
+}
+
+// FatalfIf log to level error
+func FatalfIf(cond bool, fmt string, args ...interface{}) {
+	if !cond {
+		return
+	}
+	debug.PrintStack()
+	log.Fatalf(fmt, args...)
+}
+
+// FatalIfError if err is not nil, then log to level fatal and call os.Exit
+func FatalIfError(err error) {
+	FatalfIf(err != nil, "fatal error: %v", err)
 }

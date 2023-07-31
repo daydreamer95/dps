@@ -3,26 +3,22 @@ package main
 import (
 	"context"
 	"dps/internal/pkg"
+	"dps/internal/pkg/config"
 	"dps/internal/pkg/dps_pb"
 	"dps/logger"
+	"flag"
 	"fmt"
-	"github.com/joho/godotenv"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-func main() {
-	ctx := context.Background()
-	err := godotenv.Load(".env")
-	if err != nil {
-		logger.Fatal(fmt.Sprint("Error load env file: ", err))
-	}
+var confFile = flag.String("c", "conf.yaml", "Path to the server configuration file.")
 
-	_, err = pkg.NewMySqlDb()
-	if err != nil {
-		logger.Fatal(fmt.Sprint("Error connect to db: ", err))
-	}
+func main() {
+	flag.Parse()
+	ctx := context.Background()
+	config.MustLoadConfig(*confFile)
 
 	ctc := make(chan string)
 	d := make(chan pkg.Item)

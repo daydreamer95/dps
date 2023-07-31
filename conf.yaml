@@ -1,0 +1,12 @@
+App:
+  Host: localhost
+  Port: 8081
+
+Store:
+  Driver: 'mysql'
+  Host: 'localhost'
+  User: 'root'
+  Password: 'root_password'
+  Port: 3306
+  Db: 'dps'
+  Schema: ''
