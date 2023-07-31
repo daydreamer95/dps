@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"context"
-	"dps/internal/pkg/dto"
 	"dps/internal/pkg/entity"
 	"dps/internal/pkg/logger"
 	"fmt"
@@ -11,11 +10,10 @@ import (
 
 type IReplenishsesWorker interface {
 	Start()
-	Push(req []dto.PushItemRequest) (bool, error)
-
+	Push() (bool, error)
 	//Pop Get item responding to request dto. Simply get items from
 	// prefetch buffers and returns
-	Pop(req dto.PopItemRequest) ([]entity.Item, error)
+	Pop() ([]entity.Item, error)
 }
 
 type ReplenishesWorker struct {
@@ -73,11 +71,11 @@ func (r *ReplenishesWorker) Start() {
 	}
 }
 
-func (r *ReplenishesWorker) Push(req []dto.PushItemRequest) (bool, error) {
+func (r *ReplenishesWorker) Push() (bool, error) {
 	return false, nil
 }
 
-func (r *ReplenishesWorker) Pop(req dto.PopItemRequest) ([]entity.Item, error) {
+func (r *ReplenishesWorker) Pop() ([]entity.Item, error) {
 	return nil, nil
 }
 
