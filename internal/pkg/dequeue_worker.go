@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"dps/internal/pkg/entity"
 	"dps/internal/pkg/logger"
 	"math/rand"
 	"time"
@@ -9,13 +10,13 @@ import (
 
 type DequeueWorker struct {
 	ctx          context.Context
-	dequeuedChan chan Item
+	dequeuedChan chan entity.Item
 }
 
 func NewDequeueWorker(
 	ctx context.Context) *DequeueWorker {
 
-	c := make(chan Item)
+	c := make(chan entity.Item)
 	logger.Info("Success init DequeueWorker")
 	return &DequeueWorker{
 		ctx:          ctx,
@@ -37,8 +38,8 @@ func (d *DequeueWorker) Start() {
 }
 
 // PullItemFromSource first I will fake it
-func (d *DequeueWorker) PullItemFromSource() []Item {
-	return []Item{
+func (d *DequeueWorker) PullItemFromSource() []entity.Item {
+	return []entity.Item{
 		{Priority: rand.Int31()},
 		{Priority: rand.Int31()},
 	}

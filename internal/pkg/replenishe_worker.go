@@ -3,6 +3,7 @@ package pkg
 import (
 	"context"
 	"dps/internal/pkg/dto"
+	"dps/internal/pkg/entity"
 	"dps/internal/pkg/logger"
 	"fmt"
 	"sync"
@@ -14,20 +15,20 @@ type IReplenishsesWorker interface {
 
 	//Pop Get item responding to request dto. Simply get items from
 	// prefetch buffers and returns
-	Pop(req dto.PopItemRequest) ([]Item, error)
+	Pop(req dto.PopItemRequest) ([]entity.Item, error)
 }
 
 type ReplenishesWorker struct {
 	ctx             context.Context
 	mu              sync.Mutex
 	createTopicChan chan string
-	deferItemChan   chan Item
+	deferItemChan   chan entity.Item
 	preBuffers      map[string]*PrefetchBuffer
 }
 
 func NewReplenishesWorker(ctx context.Context,
 	createTopicChan chan string,
-	deferItemChan chan Item) *ReplenishesWorker {
+	deferItemChan chan entity.Item) *ReplenishesWorker {
 	out := &ReplenishesWorker{
 		ctx:             ctx,
 		createTopicChan: createTopicChan,
@@ -76,7 +77,7 @@ func (r *ReplenishesWorker) Push(req []dto.PushItemRequest) (bool, error) {
 	return false, nil
 }
 
-func (r *ReplenishesWorker) Pop(req dto.PopItemRequest) ([]Item, error) {
+func (r *ReplenishesWorker) Pop(req dto.PopItemRequest) ([]entity.Item, error) {
 	return nil, nil
 }
 
