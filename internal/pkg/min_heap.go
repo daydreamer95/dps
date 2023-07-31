@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"dps/internal/pkg/entity"
 	"errors"
 	"sync"
 )
@@ -9,17 +8,17 @@ import (
 type MinHeap struct {
 	mu     sync.Mutex
 	Length int
-	Data   []entity.Item
+	Data   []Item
 }
 
 func NewMinHeap() *MinHeap {
 	var m MinHeap
 	m.Length = 0
-	m.Data = []entity.Item{}
+	m.Data = []Item{}
 	return &m
 }
 
-func (m *MinHeap) Insert(msg entity.Item) {
+func (m *MinHeap) Insert(msg Item) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -28,13 +27,13 @@ func (m *MinHeap) Insert(msg entity.Item) {
 	m.Length++
 }
 
-func (m *MinHeap) Poll() (entity.Item, error) {
+func (m *MinHeap) Poll() (Item, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	if m.Length == 0 {
 		//fmt.Println("ha")
-		return entity.Item{}, errors.New("Cant poll. No item")
+		return Item{}, errors.New("Cant poll. No item")
 	}
 
 	out := m.Data[0]
@@ -42,7 +41,7 @@ func (m *MinHeap) Poll() (entity.Item, error) {
 
 	if m.Length == 0 {
 		out := m.Data[0]
-		m.Data = []entity.Item{}
+		m.Data = []Item{}
 		return out, nil
 	}
 

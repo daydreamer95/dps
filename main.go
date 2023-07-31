@@ -4,7 +4,6 @@ import (
 	"context"
 	"dps/internal/pkg"
 	"dps/internal/pkg/dps_pb"
-	"dps/internal/pkg/entity"
 	"dps/logger"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -26,7 +25,7 @@ func main() {
 	}
 
 	ctc := make(chan string)
-	d := make(chan entity.Item)
+	d := make(chan pkg.Item)
 	var r pkg.IReplenishsesWorker
 	r = pkg.NewReplenishesWorker(ctx, ctc, d)
 	go r.Start()
