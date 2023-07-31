@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"context"
-	"dps/internal/pkg/logger"
+	"dps/logger"
 )
 
 type PrefetchBuffer struct {

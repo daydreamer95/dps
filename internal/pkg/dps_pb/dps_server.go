@@ -1,9 +1,8 @@
-package dps_srv
+package dps_pb
 
 import (
 	"dps/internal/pkg"
-	"dps/internal/pkg/logger"
-	"dps/internal/pkg/repository"
+	"dps/logger"
 	"fmt"
 	"google.golang.org/grpc"
 	"net"
@@ -13,13 +12,11 @@ type DpsServer struct {
 	grpcSrv *grpc.Server
 }
 
-func NewGrpcServer(rpw pkg.IReplenishsesWorker,
-	itemRepository *repository.ItemRepository,
-	topicRepository *repository.TopicRepository) *DpsServer {
+func NewGrpcServer(rpw pkg.IReplenishsesWorker) *DpsServer {
 	out := &DpsServer{}
 	var opts []grpc.ServerOption
 	out.grpcSrv = grpc.NewServer(opts...)
-	RegisterDpsServiceServer(out.grpcSrv, NewRouterGrpc(rpw, itemRepository, topicRepository))
+	RegisterDpsServiceServer(out.grpcSrv, NewRouterGrpc(rpw))
 	return out
 }
 

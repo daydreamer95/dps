@@ -4,7 +4,7 @@
 // 	protoc        v3.6.1
 // source: dps_server.proto
 
-package dps_srv
+package dps_pb
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -605,31 +605,31 @@ func file_dps_server_proto_rawDescGZIP() []byte {
 
 var file_dps_server_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_dps_server_proto_goTypes = []interface{}{
-	(*CreateTopicReq)(nil), // 0: dps_srv.CreateTopicReq
-	(*CommonRes)(nil),      // 1: dps_srv.CommonRes
-	(*PublishReq)(nil),     // 2: dps_srv.PublishReq
-	(*PublishRes)(nil),     // 3: dps_srv.PublishRes
-	(*Item)(nil),           // 4: dps_srv.Item
-	(*DequeueReq)(nil),     // 5: dps_srv.DequeueReq
-	(*DequeueRes)(nil),     // 6: dps_srv.DequeueRes
-	(*AckReq)(nil),         // 7: dps_srv.AckReq
-	(*NAckReq)(nil),        // 8: dps_srv.NAckReq
-	nil,                    // 9: dps_srv.DequeueReq.DequeueTopicEntry
+	(*CreateTopicReq)(nil), // 0: dps_pb.CreateTopicReq
+	(*CommonRes)(nil),      // 1: dps_pb.CommonRes
+	(*PublishReq)(nil),     // 2: dps_pb.PublishReq
+	(*PublishRes)(nil),     // 3: dps_pb.PublishRes
+	(*Item)(nil),           // 4: dps_pb.Item
+	(*DequeueReq)(nil),     // 5: dps_pb.DequeueReq
+	(*DequeueRes)(nil),     // 6: dps_pb.DequeueRes
+	(*AckReq)(nil),         // 7: dps_pb.AckReq
+	(*NAckReq)(nil),        // 8: dps_pb.NAckReq
+	nil,                    // 9: dps_pb.DequeueReq.DequeueTopicEntry
 }
 var file_dps_server_proto_depIdxs = []int32{
-	4, // 0: dps_srv.PublishReq.item:type_name -> dps_srv.Item
-	9, // 1: dps_srv.DequeueReq.DequeueTopic:type_name -> dps_srv.DequeueReq.DequeueTopicEntry
-	4, // 2: dps_srv.DequeueRes.items:type_name -> dps_srv.Item
-	2, // 3: dps_srv.DpsService.Publish:input_type -> dps_srv.PublishReq
-	0, // 4: dps_srv.DpsService.CreateTopic:input_type -> dps_srv.CreateTopicReq
-	5, // 5: dps_srv.DpsService.Dequeue:input_type -> dps_srv.DequeueReq
-	7, // 6: dps_srv.DpsService.Ack:input_type -> dps_srv.AckReq
-	8, // 7: dps_srv.DpsService.NAck:input_type -> dps_srv.NAckReq
-	3, // 8: dps_srv.DpsService.Publish:output_type -> dps_srv.PublishRes
-	1, // 9: dps_srv.DpsService.CreateTopic:output_type -> dps_srv.CommonRes
-	6, // 10: dps_srv.DpsService.Dequeue:output_type -> dps_srv.DequeueRes
-	1, // 11: dps_srv.DpsService.Ack:output_type -> dps_srv.CommonRes
-	1, // 12: dps_srv.DpsService.NAck:output_type -> dps_srv.CommonRes
+	4, // 0: dps_pb.PublishReq.item:type_name -> dps_pb.Item
+	9, // 1: dps_pb.DequeueReq.DequeueTopic:type_name -> dps_pb.DequeueReq.DequeueTopicEntry
+	4, // 2: dps_pb.DequeueRes.items:type_name -> dps_pb.Item
+	2, // 3: dps_pb.DpsService.Publish:input_type -> dps_pb.PublishReq
+	0, // 4: dps_pb.DpsService.CreateTopic:input_type -> dps_pb.CreateTopicReq
+	5, // 5: dps_pb.DpsService.Dequeue:input_type -> dps_pb.DequeueReq
+	7, // 6: dps_pb.DpsService.Ack:input_type -> dps_pb.AckReq
+	8, // 7: dps_pb.DpsService.NAck:input_type -> dps_pb.NAckReq
+	3, // 8: dps_pb.DpsService.Publish:output_type -> dps_pb.PublishRes
+	1, // 9: dps_pb.DpsService.CreateTopic:output_type -> dps_pb.CommonRes
+	6, // 10: dps_pb.DpsService.Dequeue:output_type -> dps_pb.DequeueRes
+	1, // 11: dps_pb.DpsService.Ack:output_type -> dps_pb.CommonRes
+	1, // 12: dps_pb.DpsService.NAck:output_type -> dps_pb.CommonRes
 	8, // [8:13] is the sub-list for method output_type
 	3, // [3:8] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name

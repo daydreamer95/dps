@@ -3,7 +3,7 @@ package pkg
 import (
 	"context"
 	"dps/internal/pkg/entity"
-	"dps/internal/pkg/logger"
+	"dps/logger"
 	"math/rand"
 	"time"
 )

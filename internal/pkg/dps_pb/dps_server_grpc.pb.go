@@ -4,7 +4,7 @@
 // - protoc             v3.6.1
 // source: dps_server.proto
 
-package dps_srv
+package dps_pb
 
 import (
 	context "context"
@@ -39,7 +39,7 @@ func NewDpsServiceClient(cc grpc.ClientConnInterface) DpsServiceClient {
 
 func (c *dpsServiceClient) Publish(ctx context.Context, in *PublishReq, opts ...grpc.CallOption) (*PublishRes, error) {
 	out := new(PublishRes)
-	err := c.cc.Invoke(ctx, "/dps_srv.DpsService/Publish", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/Publish", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *dpsServiceClient) Publish(ctx context.Context, in *PublishReq, opts ...
 
 func (c *dpsServiceClient) CreateTopic(ctx context.Context, in *CreateTopicReq, opts ...grpc.CallOption) (*CommonRes, error) {
 	out := new(CommonRes)
-	err := c.cc.Invoke(ctx, "/dps_srv.DpsService/CreateTopic", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/CreateTopic", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *dpsServiceClient) CreateTopic(ctx context.Context, in *CreateTopicReq, 
 
 func (c *dpsServiceClient) Dequeue(ctx context.Context, in *DequeueReq, opts ...grpc.CallOption) (*DequeueRes, error) {
 	out := new(DequeueRes)
-	err := c.cc.Invoke(ctx, "/dps_srv.DpsService/Dequeue", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/Dequeue", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *dpsServiceClient) Dequeue(ctx context.Context, in *DequeueReq, opts ...
 
 func (c *dpsServiceClient) Ack(ctx context.Context, in *AckReq, opts ...grpc.CallOption) (*CommonRes, error) {
 	out := new(CommonRes)
-	err := c.cc.Invoke(ctx, "/dps_srv.DpsService/Ack", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/Ack", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *dpsServiceClient) Ack(ctx context.Context, in *AckReq, opts ...grpc.Cal
 
 func (c *dpsServiceClient) NAck(ctx context.Context, in *NAckReq, opts ...grpc.CallOption) (*CommonRes, error) {
 	out := new(CommonRes)
-	err := c.cc.Invoke(ctx, "/dps_srv.DpsService/NAck", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/NAck", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func _DpsService_Publish_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/dps_srv.DpsService/Publish",
+		FullMethod: "/dps_pb.DpsService/Publish",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DpsServiceServer).Publish(ctx, req.(*PublishReq))
@@ -154,7 +154,7 @@ func _DpsService_CreateTopic_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/dps_srv.DpsService/CreateTopic",
+		FullMethod: "/dps_pb.DpsService/CreateTopic",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DpsServiceServer).CreateTopic(ctx, req.(*CreateTopicReq))
@@ -172,7 +172,7 @@ func _DpsService_Dequeue_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/dps_srv.DpsService/Dequeue",
+		FullMethod: "/dps_pb.DpsService/Dequeue",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DpsServiceServer).Dequeue(ctx, req.(*DequeueReq))
@@ -190,7 +190,7 @@ func _DpsService_Ack_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/dps_srv.DpsService/Ack",
+		FullMethod: "/dps_pb.DpsService/Ack",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DpsServiceServer).Ack(ctx, req.(*AckReq))
@@ -208,7 +208,7 @@ func _DpsService_NAck_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/dps_srv.DpsService/NAck",
+		FullMethod: "/dps_pb.DpsService/NAck",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DpsServiceServer).NAck(ctx, req.(*NAckReq))
@@ -220,7 +220,7 @@ func _DpsService_NAck_Handler(srv interface{}, ctx context.Context, dec func(int
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var DpsService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "dps_srv.DpsService",
+	ServiceName: "dps_pb.DpsService",
 	HandlerType: (*DpsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
