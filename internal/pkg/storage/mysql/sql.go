@@ -3,6 +3,7 @@ package mysql
 import (
 	"dps/internal/pkg/config"
 	"dps/internal/pkg/dps_util"
+	"dps/internal/pkg/storage"
 	"gorm.io/gorm"
 	"time"
 )
@@ -15,6 +16,12 @@ type Store struct {
 
 func (s *Store) Ping() error {
 	return dbGet().ToSQLDB().Ping()
+}
+
+func (s *Store) GetActiveTopic() ([]storage.TopicStore, error) {
+	var storages []storage.TopicStore
+	err := dbGet().Where("").Find(&storages).Error
+	return storages, err
 }
 
 // SetDBConn sets db conn pool
