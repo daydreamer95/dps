@@ -4,7 +4,8 @@ CREATE TABLE `dps`.topics (
    active TINYINT(1) NOT NULL,
    deliver_policy VARCHAR(255) NOT NULL,
    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   UNIQUE (name)
 );
 
 CREATE TABLE `dps`.items (
@@ -18,6 +19,7 @@ CREATE TABLE `dps`.items (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (topic_id) REFERENCES topics(id),
-    INDEX(topic_id, deliver_after)
+    INDEX(topic_id, deliver_after),
+    UNIQUE (id)
 )
 
