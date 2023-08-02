@@ -37,33 +37,36 @@ func NewReplenishesWorker(ctx context.Context,
 
 func (r *ReplenishesWorker) Start() {
 	logger.Info("Replenishes_Worker start!")
-	t := getActiveTopics()
+	t, err := GetStore().GetActiveTopic()
+	if err != nil {
+		logger.Fatal(fmt.Sprintf("[ReplenishesWorker]"))
+	}
 
 	for _, topic := range t {
-		logger.Info(fmt.Sprintf("Init prefetch buffer topicname [%v]", topic))
-		pb := NewPrefetchBuffer(r.ctx, topic)
-		r.preBuffers[topic] = pb
+		logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topic [%v]", topic))
+		pb := NewPrefetchBuffer(r.ctx, topic.Name)
+		r.preBuffers[topic.Name] = pb
 		go pb.Start()
 	}
 
-	logger.Info("Start listen on createTopicChan and deferItemChan")
+	logger.Info("[ReplenishesWorker] Start listen on createTopicChan and deferItemChan")
 	for {
 		select {
 		case newTopics := <-r.createTopicChan:
 			r.mu.Lock()
-			logger.Info(fmt.Sprintf("Receive new topic from chan [%v]", newTopics))
+			logger.Info(fmt.Sprintf("[ReplenishesWorker] Receive new topic from chan [%v]", newTopics))
 			topic := r.preBuffers[newTopics]
 			if topic != nil {
-				logger.Fatal(fmt.Sprintf("Topics name [%v] already exists. Something wrong", topic))
+				logger.Fatal(fmt.Sprintf("[ReplenishesWorker] Topics name [%v] already exists. Something wrong", topic))
 				return
 			}
-			logger.Info(fmt.Sprintf("Init prefetch buffer topicname [%v]", newTopics))
+			logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topicname [%v]", newTopics))
 			pb := NewPrefetchBuffer(r.ctx, newTopics)
 			r.preBuffers[newTopics] = pb
 			go pb.Start()
 			r.mu.Unlock()
 		case deferItem := <-r.deferItemChan:
-			logger.Info(fmt.Sprintf("An item has defered [%+v]", deferItem))
+			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item has defered [%+v]", deferItem))
 			//TODO: do this
 			return
 		}
@@ -76,9 +79,4 @@ func (r *ReplenishesWorker) Push() (bool, error) {
 
 func (r *ReplenishesWorker) Pop() ([]Item, error) {
 	return nil, nil
-}
-
-// getActiveTopics Return topics name
-func getActiveTopics() []string {
-	return []string{"topic1", "topic2"}
 }
