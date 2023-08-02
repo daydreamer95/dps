@@ -8,6 +8,7 @@ package dps_pb
 
 import (
 	context "context"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DpsServiceClient interface {
 	Publish(ctx context.Context, in *PublishReq, opts ...grpc.CallOption) (*PublishRes, error)
+	GetActiveTopics(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*GetActiveTopicsRes, error)
 	CreateTopic(ctx context.Context, in *CreateTopicReq, opts ...grpc.CallOption) (*CommonRes, error)
 	Dequeue(ctx context.Context, in *DequeueReq, opts ...grpc.CallOption) (*DequeueRes, error)
 	Ack(ctx context.Context, in *AckReq, opts ...grpc.CallOption) (*CommonRes, error)
@@ -40,6 +42,15 @@ func NewDpsServiceClient(cc grpc.ClientConnInterface) DpsServiceClient {
 func (c *dpsServiceClient) Publish(ctx context.Context, in *PublishReq, opts ...grpc.CallOption) (*PublishRes, error) {
 	out := new(PublishRes)
 	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/Publish", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dpsServiceClient) GetActiveTopics(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*GetActiveTopicsRes, error) {
+	out := new(GetActiveTopicsRes)
+	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/GetActiveTopics", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +93,12 @@ func (c *dpsServiceClient) NAck(ctx context.Context, in *NAckReq, opts ...grpc.C
 	return out, nil
 }
 
-// DpsServiceServer is the grpcSrv API for DpsService service.
+// DpsServiceServer is the server API for DpsService service.
 // All implementations must embed UnimplementedDpsServiceServer
 // for forward compatibility
 type DpsServiceServer interface {
 	Publish(context.Context, *PublishReq) (*PublishRes, error)
+	GetActiveTopics(context.Context, *empty.Empty) (*GetActiveTopicsRes, error)
 	CreateTopic(context.Context, *CreateTopicReq) (*CommonRes, error)
 	Dequeue(context.Context, *DequeueReq) (*DequeueRes, error)
 	Ack(context.Context, *AckReq) (*CommonRes, error)
@@ -100,6 +112,9 @@ type UnimplementedDpsServiceServer struct {
 
 func (UnimplementedDpsServiceServer) Publish(context.Context, *PublishReq) (*PublishRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
+}
+func (UnimplementedDpsServiceServer) GetActiveTopics(context.Context, *empty.Empty) (*GetActiveTopicsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActiveTopics not implemented")
 }
 func (UnimplementedDpsServiceServer) CreateTopic(context.Context, *CreateTopicReq) (*CommonRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTopic not implemented")
@@ -140,6 +155,24 @@ func _DpsService_Publish_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DpsServiceServer).Publish(ctx, req.(*PublishReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DpsService_GetActiveTopics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DpsServiceServer).GetActiveTopics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dps_pb.DpsService/GetActiveTopics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DpsServiceServer).GetActiveTopics(ctx, req.(*empty.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -226,6 +259,10 @@ var DpsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Publish",
 			Handler:    _DpsService_Publish_Handler,
+		},
+		{
+			MethodName: "GetActiveTopics",
+			Handler:    _DpsService_GetActiveTopics_Handler,
 		},
 		{
 			MethodName: "CreateTopic",

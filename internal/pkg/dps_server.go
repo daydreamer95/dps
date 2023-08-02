@@ -1,8 +1,8 @@
-package dps_pb
+package pkg
 
 import (
-	"dps/internal/pkg"
 	"dps/internal/pkg/config"
+	"dps/internal/pkg/dps_pb"
 	"dps/logger"
 	"fmt"
 	"google.golang.org/grpc"
@@ -13,11 +13,11 @@ type DpsServer struct {
 	grpcSrv *grpc.Server
 }
 
-func NewGrpcServer(rpw pkg.IReplenishsesWorker) *DpsServer {
+func NewGrpcServer(rpw IReplenishsesWorker) *DpsServer {
 	out := &DpsServer{}
 	var opts []grpc.ServerOption
 	out.grpcSrv = grpc.NewServer(opts...)
-	RegisterDpsServiceServer(out.grpcSrv, NewRouterGrpc(rpw))
+	dps_pb.RegisterDpsServiceServer(out.grpcSrv, NewRouterGrpc(rpw))
 	return out
 }
 

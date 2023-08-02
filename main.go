@@ -4,7 +4,6 @@ import (
 	"context"
 	"dps/internal/pkg"
 	"dps/internal/pkg/config"
-	"dps/internal/pkg/dps_pb"
 	"dps/logger"
 	"flag"
 	"fmt"
@@ -26,7 +25,7 @@ func main() {
 	r = pkg.NewReplenishesWorker(ctx, ctc, d)
 	go r.Start()
 
-	srv := dps_pb.NewGrpcServer(r)
+	srv := pkg.NewGrpcServer(r)
 	go srv.StartListenAndServer()
 
 	c := make(chan os.Signal)

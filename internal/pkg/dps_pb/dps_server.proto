@@ -1,6 +1,9 @@
 syntax = "proto3";
-package dps_srv;
+
+package dps_pb;
 option go_package = "./dps_pb";
+import "google/protobuf/empty.proto";
+// export PATH=$PATH:$GOPATH/bin
 // protoc --go_out=. --go_opt=paths=source_relative  --go-grpc_out=. --go-grpc_opt=paths=source_relative ./dps_server.proto
 
 message CreateTopicReq {
@@ -48,8 +51,15 @@ message NAckReq {
   string DpsAssignedUniqueId = 2;
 }
 
+message GetActiveTopicsRes {
+  int32 Id = 1;
+  string Name = 2;
+  string DeliveryPolicy = 3;
+}
+
 service DpsService {
   rpc Publish(PublishReq) returns (PublishRes) {}
+  rpc GetActiveTopics(google.protobuf.Empty) returns (GetActiveTopicsRes){}
   rpc CreateTopic(CreateTopicReq) returns (CommonRes) {}
   rpc Dequeue(DequeueReq) returns (DequeueRes) {}
   rpc Ack(AckReq) returns (CommonRes) {}
