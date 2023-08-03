@@ -12,7 +12,7 @@ type IReplenishsesWorker interface {
 	Push(items []Item) (bool, error)
 	//Pop Get item responding to request dto. Simply get items from
 	// prefetch buffers and returns
-	Pop(topicId uint) ([]Item, error)
+	Pop(topicId uint, count int) ([]Item, error)
 }
 
 type ReplenishesWorker struct {
