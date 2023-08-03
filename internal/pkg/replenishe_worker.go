@@ -18,20 +18,20 @@ type IReplenishsesWorker interface {
 type ReplenishesWorker struct {
 	ctx             context.Context
 	mu              sync.Mutex
-	createTopicChan chan string
+	createTopicChan <-chan Topic
 	deferItemChan   chan Item
-	preBuffers      map[string]*PrefetchBuffer
+	preBuffers      map[uint]*PrefetchBuffer
 }
 
 func NewReplenishesWorker(ctx context.Context,
-	createTopicChan chan string,
+	createTopicChan <-chan Topic,
 	deferItemChan chan Item) *ReplenishesWorker {
 	out := &ReplenishesWorker{
 		ctx:             ctx,
 		createTopicChan: createTopicChan,
 		deferItemChan:   deferItemChan,
 	}
-	out.preBuffers = map[string]*PrefetchBuffer{}
+	out.preBuffers = map[uint]*PrefetchBuffer{}
 	return out
 }
 
@@ -44,25 +44,24 @@ func (r *ReplenishesWorker) Start() {
 
 	for _, topic := range t {
 		logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topic [%v]", topic))
-		pb := NewPrefetchBuffer(r.ctx, topic.Name)
-		r.preBuffers[topic.Name] = pb
+		pb := NewPrefetchBuffer(r.ctx, topic.Id)
+		r.preBuffers[topic.Id] = pb
 		go pb.Start()
 	}
-
 	logger.Info("[ReplenishesWorker] Start listen on createTopicChan and deferItemChan")
 	for {
 		select {
 		case newTopics := <-r.createTopicChan:
 			r.mu.Lock()
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] Receive new topic from chan [%v]", newTopics))
-			topic := r.preBuffers[newTopics]
+			topic := r.preBuffers[newTopics.Id]
 			if topic != nil {
 				logger.Fatal(fmt.Sprintf("[ReplenishesWorker] Topics name [%v] already exists. Something wrong", topic))
 				return
 			}
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topicname [%v]", newTopics))
-			pb := NewPrefetchBuffer(r.ctx, newTopics)
-			r.preBuffers[newTopics] = pb
+			pb := NewPrefetchBuffer(r.ctx, newTopics.Id)
+			r.preBuffers[newTopics.Id] = pb
 			go pb.Start()
 			r.mu.Unlock()
 		case deferItem := <-r.deferItemChan:

@@ -8,6 +8,7 @@ import "google/protobuf/empty.proto";
 
 message CreateTopicReq {
   string TopicName = 1;
+  string DeliverPolicy = 2;
 }
 
 message CommonRes {

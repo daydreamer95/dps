@@ -19,7 +19,7 @@ func main() {
 	ctx := context.Background()
 	config.MustLoadConfig(*confFile)
 
-	ctc := make(chan string)
+	ctc := make(chan pkg.Topic)
 	d := make(chan pkg.Item)
 	var r pkg.IReplenishsesWorker
 	r = pkg.NewReplenishesWorker(ctx, ctc, d)
