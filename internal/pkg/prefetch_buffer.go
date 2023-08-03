@@ -20,13 +20,3 @@ func NewPrefetchBuffer(ctx context.Context, topicId uint) *PrefetchBuffer {
 	logger.Info("Starting PrefetchBuffer. Ready to serve!")
 	return p
 }
-
-//func (p *PrefetchBuffer) Start() {
-//	worker := NewDequeueWorker(p.ctx, p.topicId)
-//	go func() {
-//		worker.Start()
-//		for i := range worker.dequeuedChan {
-//			p.inMemPq.Insert(i)
-//		}
-//	}()
-//}

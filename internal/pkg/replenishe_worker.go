@@ -12,7 +12,7 @@ type IReplenishsesWorker interface {
 	Push(items []Item) (bool, error)
 	//Pop Get item responding to request dto. Simply get items from
 	// prefetch buffers and returns
-	Pop() ([]Item, error)
+	Pop(topicId uint) ([]Item, error)
 }
 
 type ReplenishesWorker struct {
@@ -72,9 +72,32 @@ func (r *ReplenishesWorker) Start() {
 }
 
 func (r *ReplenishesWorker) Push(items []Item) (bool, error) {
-	return false, nil
+	for _, item := range items {
+		pfBuffer := r.preBuffers[item.TopicId]
+		if pfBuffer == nil {
+			logger.Error(fmt.Sprintf("Not existed topic with id: [%v]", item.TopicId))
+			continue
+		}
+		pfBuffer.inMemPq.Insert(item)
+		fmt.Println("Insert item to prefetch buffer done:", item)
+	}
+	return true, nil
 }
 
-func (r *ReplenishesWorker) Pop() ([]Item, error) {
-	return nil, nil
+func (r *ReplenishesWorker) Pop(topicId uint, count int) ([]Item, error) {
+	pfBuffer := r.preBuffers[topicId]
+	if pfBuffer == nil {
+		return nil, ErrNotFoundTopic
+	}
+
+	var result []Item
+	for i := 0; i < count; i++ {
+		polled, err := pfBuffer.inMemPq.Poll()
+		if err != nil {
+			logger.Info(fmt.Sprintf("Error poll item from prefetch buffer: [%v] ", err))
+			continue
+		}
+		result = append(result, polled)
+	}
+	return result, nil
 }
