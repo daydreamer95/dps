@@ -9,19 +9,16 @@ import (
 
 type DequeueWorker struct {
 	ctx          context.Context
-	topicId      uint
 	dequeuedChan chan Item
 }
 
 func NewDequeueWorker(
-	ctx context.Context,
-	topicId uint) *DequeueWorker {
+	ctx context.Context) *DequeueWorker {
 
 	c := make(chan Item)
 	logger.Info("Success init DequeueWorker")
 	return &DequeueWorker{
 		ctx:          ctx,
-		topicId:      topicId,
 		dequeuedChan: c,
 	}
 }
@@ -46,5 +43,5 @@ func (d *DequeueWorker) Start() {
 // PullItemFromSource first I will fake it
 func (d *DequeueWorker) PullItemFromSource() ([]Item, error) {
 	// TODO: implement status
-	return GetStore().FetchItemByTopicIds(d.topicId, "")
+	return GetStore().FetchItemReadyToDelivery("")
 }

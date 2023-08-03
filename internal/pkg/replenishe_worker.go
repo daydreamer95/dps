@@ -9,7 +9,7 @@ import (
 
 type IReplenishsesWorker interface {
 	Start()
-	Push() (bool, error)
+	Push(items []Item) (bool, error)
 	//Pop Get item responding to request dto. Simply get items from
 	// prefetch buffers and returns
 	Pop() ([]Item, error)
@@ -47,7 +47,6 @@ func (r *ReplenishesWorker) Start() {
 		logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topic [%v]", topic))
 		pb := NewPrefetchBuffer(r.ctx, topic.Id)
 		r.preBuffers[topic.Id] = pb
-		go pb.Start()
 	}
 	logger.Info("[ReplenishesWorker] Start listen on createTopicChan and deferItemChan")
 	for {
@@ -63,7 +62,6 @@ func (r *ReplenishesWorker) Start() {
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topicname [%v]", newTopics))
 			pb := NewPrefetchBuffer(r.ctx, newTopics.Id)
 			r.preBuffers[newTopics.Id] = pb
-			go pb.Start()
 			r.mu.Unlock()
 		case deferItem := <-r.deferItemChan:
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item has defered [%+v]", deferItem))
@@ -73,7 +71,7 @@ func (r *ReplenishesWorker) Start() {
 	}
 }
 
-func (r *ReplenishesWorker) Push() (bool, error) {
+func (r *ReplenishesWorker) Push(items []Item) (bool, error) {
 	return false, nil
 }
 
