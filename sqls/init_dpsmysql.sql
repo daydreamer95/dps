@@ -12,6 +12,7 @@ CREATE TABLE `dps`.items (
     id char(255) PRIMARY KEY NOT NULL,
     topic_id INT(6) UNSIGNED,
     priority INT(32) UNSIGNED,
+    status varchar(30) NOT NULL,
     deliver_after TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     payload BLOB ,
     meta_data BLOB,

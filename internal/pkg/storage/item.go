@@ -10,6 +10,7 @@ type ItemStore struct {
 	Id            string    `json:"id"`
 	TopicId       uint      `json:"topic_id"`
 	Priority      int32     `json:"priority"`
+	Status        string    `json:"status"`
 	DeliverAfter  time.Time `json:"deliver_after"`
 	Payload       []byte    `json:"payload"`
 	MetaData      []byte    `json:"metaData"`

@@ -20,7 +20,8 @@ type ReplenishesWorker struct {
 	mu              sync.Mutex
 	createTopicChan <-chan Topic
 	deferItemChan   chan Item
-	preBuffers      map[uint]*PrefetchBuffer
+	// preBuffers Maps of prefetch buffers with topic id was key
+	preBuffers map[uint]*PrefetchBuffer
 }
 
 func NewReplenishesWorker(ctx context.Context,

@@ -24,6 +24,12 @@ func (s *Store) GetActiveTopic() ([]storage.TopicStore, error) {
 	return storages, err
 }
 
+func (s *Store) FetchItemByTopicIds(topicId uint, status string) ([]storage.ItemStore, error) {
+	var items []storage.ItemStore
+	err := dbGet().Where("topic_id = ? and delivery_after >= ? and status != ? ", topicId, time.Now(), "").Find(&items).Error
+	return items, err
+}
+
 // SetDBConn sets db conn pool
 func SetDBConn(db *gorm.DB) {
 	sqldb, _ := db.DB()
