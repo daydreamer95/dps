@@ -9,17 +9,16 @@ import (
 
 type DequeueWorker struct {
 	ctx          context.Context
-	dequeuedChan chan Item
+	dequeuedChan chan<- Item
 }
 
 func NewDequeueWorker(
-	ctx context.Context) *DequeueWorker {
-
-	c := make(chan Item)
+	ctx context.Context,
+	dequeuedChan chan<- Item) *DequeueWorker {
 	logger.Info("Success init DequeueWorker")
 	return &DequeueWorker{
 		ctx:          ctx,
-		dequeuedChan: c,
+		dequeuedChan: dequeuedChan,
 	}
 }
 

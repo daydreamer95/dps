@@ -25,7 +25,7 @@ func main() {
 	r = pkg.NewReplenishesWorker(ctx, ctc, d)
 	go r.Start()
 
-	dequeWorker := pkg.NewDequeueWorker(ctx)
+	dequeWorker := pkg.NewDequeueWorker(ctx, d)
 	go dequeWorker.Start()
 
 	srv := pkg.NewGrpcServer(r)

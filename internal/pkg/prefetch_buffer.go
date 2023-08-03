@@ -21,12 +21,12 @@ func NewPrefetchBuffer(ctx context.Context, topicId uint) *PrefetchBuffer {
 	return p
 }
 
-func (p *PrefetchBuffer) Start() {
-	//worker := NewDequeueWorker(p.ctx, p.topicId)
-	//go func() {
-	//	worker.Start()
-	//	for i := range worker.dequeuedChan {
-	//		p.inMemPq.Insert(i)
-	//	}
-	//}()
-}
+//func (p *PrefetchBuffer) Start() {
+//	worker := NewDequeueWorker(p.ctx, p.topicId)
+//	go func() {
+//		worker.Start()
+//		for i := range worker.dequeuedChan {
+//			p.inMemPq.Insert(i)
+//		}
+//	}()
+//}

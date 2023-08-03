@@ -26,7 +26,8 @@ func (s *Store) GetActiveTopic() ([]storage.TopicStore, error) {
 
 func (s *Store) FetchItemReadyToDelivery(status string) ([]storage.ItemStore, error) {
 	var items []storage.ItemStore
-	err := dbGet().Where("delivery_after >= ? and status != ? ", time.Now(), "").Find(&items).Error
+	err := dbGet().Where("delivery_after >= ? and status != ?", time.Now(), "").
+		Find(&items).Error
 	return items, err
 }
 
