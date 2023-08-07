@@ -42,5 +42,5 @@ func (d *DequeueWorker) Start() {
 // PullItemFromSource first I will fake it
 func (d *DequeueWorker) PullItemFromSource() ([]Item, error) {
 	// TODO: implement status
-	return GetStore().FetchItemReadyToDelivery("")
+	return GetStore().FetchItemReadyToDelivery(ItemStatusInitialize)
 }

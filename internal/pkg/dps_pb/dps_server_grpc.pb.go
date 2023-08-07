@@ -25,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type DpsServiceClient interface {
 	Publish(ctx context.Context, in *PublishReq, opts ...grpc.CallOption) (*PublishRes, error)
 	GetActiveTopics(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*GetActiveTopicsRes, error)
-	CreateTopic(ctx context.Context, in *CreateTopicReq, opts ...grpc.CallOption) (*CommonRes, error)
+	CreateTopic(ctx context.Context, in *CreateTopicReq, opts ...grpc.CallOption) (*CreateTopicRes, error)
 	Dequeue(ctx context.Context, in *DequeueReq, opts ...grpc.CallOption) (*DequeueRes, error)
 	Ack(ctx context.Context, in *AckReq, opts ...grpc.CallOption) (*CommonRes, error)
 	NAck(ctx context.Context, in *NAckReq, opts ...grpc.CallOption) (*CommonRes, error)
@@ -57,8 +57,8 @@ func (c *dpsServiceClient) GetActiveTopics(ctx context.Context, in *empty.Empty,
 	return out, nil
 }
 
-func (c *dpsServiceClient) CreateTopic(ctx context.Context, in *CreateTopicReq, opts ...grpc.CallOption) (*CommonRes, error) {
-	out := new(CommonRes)
+func (c *dpsServiceClient) CreateTopic(ctx context.Context, in *CreateTopicReq, opts ...grpc.CallOption) (*CreateTopicRes, error) {
+	out := new(CreateTopicRes)
 	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/CreateTopic", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (c *dpsServiceClient) NAck(ctx context.Context, in *NAckReq, opts ...grpc.C
 type DpsServiceServer interface {
 	Publish(context.Context, *PublishReq) (*PublishRes, error)
 	GetActiveTopics(context.Context, *empty.Empty) (*GetActiveTopicsRes, error)
-	CreateTopic(context.Context, *CreateTopicReq) (*CommonRes, error)
+	CreateTopic(context.Context, *CreateTopicReq) (*CreateTopicRes, error)
 	Dequeue(context.Context, *DequeueReq) (*DequeueRes, error)
 	Ack(context.Context, *AckReq) (*CommonRes, error)
 	NAck(context.Context, *NAckReq) (*CommonRes, error)
@@ -116,7 +116,7 @@ func (UnimplementedDpsServiceServer) Publish(context.Context, *PublishReq) (*Pub
 func (UnimplementedDpsServiceServer) GetActiveTopics(context.Context, *empty.Empty) (*GetActiveTopicsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActiveTopics not implemented")
 }
-func (UnimplementedDpsServiceServer) CreateTopic(context.Context, *CreateTopicReq) (*CommonRes, error) {
+func (UnimplementedDpsServiceServer) CreateTopic(context.Context, *CreateTopicReq) (*CreateTopicRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTopic not implemented")
 }
 func (UnimplementedDpsServiceServer) Dequeue(context.Context, *DequeueReq) (*DequeueRes, error) {

@@ -21,7 +21,7 @@ func (d *RouterGrpc) Publish(context.Context, *dps_pb.PublishReq) (*dps_pb.Publi
 	return nil, nil
 }
 
-func (d *RouterGrpc) CreateTopic(context.Context, *dps_pb.CreateTopicReq) (*dps_pb.CommonRes, error) {
+func (d *RouterGrpc) CreateTopic(context.Context, *dps_pb.CreateTopicReq) (*dps_pb.GetActiveTopicsRes, error) {
 	return nil, nil
 }
 func (d *RouterGrpc) Dequeue(ctx context.Context, req *dps_pb.DequeueReq) (*dps_pb.DequeueRes, error) {

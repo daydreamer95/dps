@@ -6,3 +6,8 @@ import (
 
 type Item = storage.ItemStore
 type Topic = storage.TopicStore
+
+const (
+	ItemStatusInitialize     = "INITIALIZE"
+	ItemStatusReadyToDeliver = "READY_TO_DELIVER"
+)
