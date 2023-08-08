@@ -62,17 +62,17 @@ func (d *RouterGrpc) CreateTopic(ctx context.Context, req *dps_pb.CreateTopicReq
 		return &dps_pb.CreateTopicRes{}, status.New(codes.Internal, err.Error()).Err()
 	}
 
-	var status dps_pb.TopicActive
+	var statusTopic dps_pb.TopicActive
 	if topic.Active == TopicStatusActive {
-		status = dps_pb.TopicActive_ACTIVE
+		statusTopic = dps_pb.TopicActive_ACTIVE
 	} else {
-		status = dps_pb.TopicActive_INACTIVE
+		statusTopic = dps_pb.TopicActive_INACTIVE
 	}
 
 	return &dps_pb.CreateTopicRes{
 		TopicId:        uint32(topic.Id),
 		Name:           topic.Name,
-		Active:         status,
+		Active:         statusTopic,
 		DeliveryPolicy: topic.DeliverPolicy,
 	}, nil
 }
