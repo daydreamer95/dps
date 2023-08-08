@@ -4,6 +4,8 @@ import (
 	"context"
 	"dps/internal/pkg/dps_pb"
 	"github.com/golang/protobuf/ptypes/empty"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type RouterGrpc struct {
@@ -24,18 +26,30 @@ func (d *RouterGrpc) Publish(context.Context, *dps_pb.PublishReq) (*dps_pb.Publi
 func (d *RouterGrpc) CreateTopic(context.Context, *dps_pb.CreateTopicReq) (*dps_pb.GetActiveTopicsRes, error) {
 	return nil, nil
 }
-func (d *RouterGrpc) Dequeue(ctx context.Context, req *dps_pb.DequeueReq) (*dps_pb.DequeueRes, error) {
+func (d *RouterGrpc) Dequeue(ctx context.Context, req *dps_pb.DequeueReq) (*empty.Empty, error) {
 	return nil, nil
 }
 
-func (d *RouterGrpc) Ack(context.Context, *dps_pb.AckReq) (*dps_pb.CommonRes, error) {
+func (d *RouterGrpc) Ack(context.Context, *dps_pb.AckReq) (*empty.Empty, error) {
 	return nil, nil
 }
 
-func (d *RouterGrpc) NAck(context.Context, *dps_pb.NAckReq) (*dps_pb.CommonRes, error) {
+func (d *RouterGrpc) NAck(context.Context, *dps_pb.NAckReq) (*empty.Empty, error) {
 	return nil, nil
 }
 
 func (d *RouterGrpc) GetActiveTopics(context.Context, *empty.Empty) (*dps_pb.GetActiveTopicsRes, error) {
+	topics, err := GetStore().GetActiveTopic()
+	if err != nil {
+		return &dps_pb.GetActiveTopicsRes{}, status.New(codes.Internal, err.Error()).Err()
+	}
+	out := &dps_pb.GetActiveTopicsRes{}
+	for _, t := range topics {
+		out.Topics = append(out.Topics, &dps_pb.Topic{
+			Id:             string(t.Id),
+			Name:           t.Name,
+			DeliveryPolicy: t.DeliverPolicy,
+		})
+	}
 	return nil, nil
 }

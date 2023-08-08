@@ -26,9 +26,9 @@ type DpsServiceClient interface {
 	Publish(ctx context.Context, in *PublishReq, opts ...grpc.CallOption) (*PublishRes, error)
 	GetActiveTopics(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*GetActiveTopicsRes, error)
 	CreateTopic(ctx context.Context, in *CreateTopicReq, opts ...grpc.CallOption) (*CreateTopicRes, error)
-	Dequeue(ctx context.Context, in *DequeueReq, opts ...grpc.CallOption) (*DequeueRes, error)
-	Ack(ctx context.Context, in *AckReq, opts ...grpc.CallOption) (*CommonRes, error)
-	NAck(ctx context.Context, in *NAckReq, opts ...grpc.CallOption) (*CommonRes, error)
+	Dequeue(ctx context.Context, in *DequeueReq, opts ...grpc.CallOption) (*empty.Empty, error)
+	Ack(ctx context.Context, in *AckReq, opts ...grpc.CallOption) (*empty.Empty, error)
+	NAck(ctx context.Context, in *NAckReq, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type dpsServiceClient struct {
@@ -66,8 +66,8 @@ func (c *dpsServiceClient) CreateTopic(ctx context.Context, in *CreateTopicReq, 
 	return out, nil
 }
 
-func (c *dpsServiceClient) Dequeue(ctx context.Context, in *DequeueReq, opts ...grpc.CallOption) (*DequeueRes, error) {
-	out := new(DequeueRes)
+func (c *dpsServiceClient) Dequeue(ctx context.Context, in *DequeueReq, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/Dequeue", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -75,8 +75,8 @@ func (c *dpsServiceClient) Dequeue(ctx context.Context, in *DequeueReq, opts ...
 	return out, nil
 }
 
-func (c *dpsServiceClient) Ack(ctx context.Context, in *AckReq, opts ...grpc.CallOption) (*CommonRes, error) {
-	out := new(CommonRes)
+func (c *dpsServiceClient) Ack(ctx context.Context, in *AckReq, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/Ack", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (c *dpsServiceClient) Ack(ctx context.Context, in *AckReq, opts ...grpc.Cal
 	return out, nil
 }
 
-func (c *dpsServiceClient) NAck(ctx context.Context, in *NAckReq, opts ...grpc.CallOption) (*CommonRes, error) {
-	out := new(CommonRes)
+func (c *dpsServiceClient) NAck(ctx context.Context, in *NAckReq, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/dps_pb.DpsService/NAck", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -100,9 +100,9 @@ type DpsServiceServer interface {
 	Publish(context.Context, *PublishReq) (*PublishRes, error)
 	GetActiveTopics(context.Context, *empty.Empty) (*GetActiveTopicsRes, error)
 	CreateTopic(context.Context, *CreateTopicReq) (*CreateTopicRes, error)
-	Dequeue(context.Context, *DequeueReq) (*DequeueRes, error)
-	Ack(context.Context, *AckReq) (*CommonRes, error)
-	NAck(context.Context, *NAckReq) (*CommonRes, error)
+	Dequeue(context.Context, *DequeueReq) (*empty.Empty, error)
+	Ack(context.Context, *AckReq) (*empty.Empty, error)
+	NAck(context.Context, *NAckReq) (*empty.Empty, error)
 	mustEmbedUnimplementedDpsServiceServer()
 }
 
@@ -119,13 +119,13 @@ func (UnimplementedDpsServiceServer) GetActiveTopics(context.Context, *empty.Emp
 func (UnimplementedDpsServiceServer) CreateTopic(context.Context, *CreateTopicReq) (*CreateTopicRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTopic not implemented")
 }
-func (UnimplementedDpsServiceServer) Dequeue(context.Context, *DequeueReq) (*DequeueRes, error) {
+func (UnimplementedDpsServiceServer) Dequeue(context.Context, *DequeueReq) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Dequeue not implemented")
 }
-func (UnimplementedDpsServiceServer) Ack(context.Context, *AckReq) (*CommonRes, error) {
+func (UnimplementedDpsServiceServer) Ack(context.Context, *AckReq) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ack not implemented")
 }
-func (UnimplementedDpsServiceServer) NAck(context.Context, *NAckReq) (*CommonRes, error) {
+func (UnimplementedDpsServiceServer) NAck(context.Context, *NAckReq) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NAck not implemented")
 }
 func (UnimplementedDpsServiceServer) mustEmbedUnimplementedDpsServiceServer() {}
