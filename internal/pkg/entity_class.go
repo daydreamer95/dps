@@ -13,6 +13,6 @@ const (
 )
 
 const (
-	TopicStatusActive   = "ACTIVE"
-	TopicStatusInActive = "INACTIVE"
+	TopicStatusActive   = 1
+	TopicStatusInActive = 2
 )

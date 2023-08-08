@@ -19,7 +19,6 @@ func (s *Store) Ping() error {
 }
 
 func (s *Store) CreateTopic(store storage.TopicStore) (storage.TopicStore, error) {
-	store.Active = "ACTIVE"
 	err := dbGet().Create(&store).Error
 	return store, err
 }
