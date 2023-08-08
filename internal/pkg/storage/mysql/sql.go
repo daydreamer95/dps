@@ -32,7 +32,7 @@ func (s *Store) GetActiveTopic() ([]storage.TopicStore, error) {
 
 func (s *Store) FetchItemReadyToDelivery(status string) ([]storage.ItemStore, error) {
 	var items []storage.ItemStore
-	err := dbGet().Where("delivery_after >= ? and status != ?", time.Now(), status).
+	err := dbGet().Where("deliver_after >= ? and status != ?", time.Now(), status).
 		Find(&items).Error
 	return items, err
 }
