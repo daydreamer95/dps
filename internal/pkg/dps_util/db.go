@@ -14,8 +14,8 @@ import (
 
 // ModelBase model base for gorm to provide base fields
 type ModelBase struct {
-	CreateTime *time.Time `json:"create_time" gorm:"autoCreateTime"`
-	UpdateTime *time.Time `json:"update_time" gorm:"autoUpdateTime"`
+	CreatedAt *time.Time `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt *time.Time `json:"updated_at" gorm:"autoUpdateTime"`
 }
 
 func getGormDialetor(driver string, dsn string) gorm.Dialector {

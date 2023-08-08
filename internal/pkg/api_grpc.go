@@ -51,6 +51,28 @@ func (d *RouterGrpc) GetActiveTopics(context.Context, *empty.Empty) (*dps_pb.Get
 	return nil, nil
 }
 
-func (d *RouterGrpc) CreateTopic(context.Context, *dps_pb.CreateTopicReq) (*dps_pb.GetActiveTopicsRes, error) {
-	return nil, nil
+func (d *RouterGrpc) CreateTopic(ctx context.Context, req *dps_pb.CreateTopicReq) (*dps_pb.CreateTopicRes, error) {
+	t := Topic{
+		Name:          req.TopicName,
+		Active:        TopicStatusActive,
+		DeliverPolicy: string(req.DeliverPolicy),
+	}
+	topic, err := GetStore().CreateTopic(t)
+	if err != nil {
+		return &dps_pb.CreateTopicRes{}, status.New(codes.Internal, err.Error()).Err()
+	}
+
+	var status dps_pb.TopicActive
+	if topic.Active == TopicStatusActive {
+		status = dps_pb.TopicActive_ACTIVE
+	} else {
+		status = dps_pb.TopicActive_INACTIVE
+	}
+
+	return &dps_pb.CreateTopicRes{
+		TopicId:        string(topic.Id),
+		Name:           topic.Name,
+		Active:         status,
+		DeliveryPolicy: topic.DeliverPolicy,
+	}, nil
 }

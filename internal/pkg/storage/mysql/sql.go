@@ -18,6 +18,12 @@ func (s *Store) Ping() error {
 	return dbGet().ToSQLDB().Ping()
 }
 
+func (s *Store) CreateTopic(store storage.TopicStore) (storage.TopicStore, error) {
+	store.Active = "ACTIVE"
+	err := dbGet().Create(&store).Error
+	return store, err
+}
+
 func (s *Store) GetActiveTopic() ([]storage.TopicStore, error) {
 	var storages []storage.TopicStore
 	err := dbGet().Where("").Find(&storages).Error

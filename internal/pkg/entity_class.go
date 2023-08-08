@@ -11,3 +11,8 @@ const (
 	ItemStatusInitialize     = "INITIALIZE"
 	ItemStatusReadyToDeliver = "READY_TO_DELIVER"
 )
+
+const (
+	TopicStatusActive   = "ACTIVE"
+	TopicStatusInActive = "INACTIVE"
+)
