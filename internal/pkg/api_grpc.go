@@ -43,7 +43,7 @@ func (d *RouterGrpc) GetActiveTopics(context.Context, *empty.Empty) (*dps_pb.Get
 	out := &dps_pb.GetActiveTopicsRes{}
 	for _, t := range topics {
 		out.Topics = append(out.Topics, &dps_pb.Topic{
-			Id:             string(t.Id),
+			Id:             uint32(t.Id),
 			Name:           t.Name,
 			DeliveryPolicy: t.DeliverPolicy,
 		})
@@ -70,7 +70,7 @@ func (d *RouterGrpc) CreateTopic(ctx context.Context, req *dps_pb.CreateTopicReq
 	}
 
 	return &dps_pb.CreateTopicRes{
-		TopicId:        string(topic.Id),
+		TopicId:        uint32(topic.Id),
 		Name:           topic.Name,
 		Active:         status,
 		DeliveryPolicy: topic.DeliverPolicy,

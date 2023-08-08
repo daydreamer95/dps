@@ -31,7 +31,7 @@ enum DeliverPolicy {
 }
 
 message CreateTopicRes {
-  string TopicId = 1;
+  uint32 TopicId = 1;
   string Name = 2;
   TopicActive Active = 3;
   string DeliveryPolicy = 4;
@@ -83,7 +83,7 @@ message GetActiveTopicsRes {
 }
 
 message Topic {
-  string Id = 1;
+  uint32 Id = 1;
   string Name = 2;
   string DeliveryPolicy = 3;
 }
