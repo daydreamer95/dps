@@ -21,8 +21,8 @@ message CreateTopicReq {
 }
 
 enum TopicActive {
-  ACTIVE = 0;
-  INACTIVE = 1;
+  INACTIVE = 0;
+  ACTIVE = 1;
 }
 
 enum DeliverPolicy {

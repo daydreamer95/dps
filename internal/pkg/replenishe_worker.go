@@ -39,7 +39,7 @@ func NewReplenishesWorker(ctx context.Context,
 
 func (r *ReplenishesWorker) Start() {
 	logger.Info("Replenishes_Worker start!")
-	t, err := GetStore().GetActiveTopic()
+	t, err := GetStore().GetActiveTopic(r.ctx)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("[ReplenishesWorker]"))
 	}

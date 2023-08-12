@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"dps/internal/pkg/config"
 	"dps/internal/pkg/dps_util"
 	"dps/internal/pkg/storage"
@@ -18,18 +19,18 @@ func (s *Store) Ping() error {
 	return dbGet().ToSQLDB().Ping()
 }
 
-func (s *Store) CreateTopic(store storage.TopicStore) (storage.TopicStore, error) {
+func (s *Store) CreateTopic(ctx context.Context, store storage.TopicStore) (storage.TopicStore, error) {
 	err := dbGet().Create(&store).Error
 	return store, err
 }
 
-func (s *Store) GetActiveTopic() ([]storage.TopicStore, error) {
+func (s *Store) GetActiveTopic(ctx context.Context) ([]storage.TopicStore, error) {
 	var storages []storage.TopicStore
 	err := dbGet().Where("").Find(&storages).Error
 	return storages, err
 }
 
-func (s *Store) FetchItemReadyToDelivery(status string) ([]storage.ItemStore, error) {
+func (s *Store) FetchItemReadyToDelivery(ctx context.Context, status string) ([]storage.ItemStore, error) {
 	var items []storage.ItemStore
 	err := dbGet().Where("deliver_after >= ? and status != ?", time.Now(), status).
 		Find(&items).Error

@@ -3,6 +3,8 @@ package pkg
 import (
 	"context"
 	"dps/internal/pkg/storage"
+	"fmt"
+	"github.com/go-playground/validator/v10"
 )
 
 type TopicStatus uint
@@ -11,6 +13,24 @@ const (
 	TopicStatusInActive TopicStatus = 0
 	TopicStatusActive   TopicStatus = 1
 )
+
+type TopicDeliveryPolicy int
+
+const (
+	DeliveryPolicyAtLeastOnce TopicDeliveryPolicy = 0
+	DeliveryPolicyAtMostOnce  TopicDeliveryPolicy = 1
+)
+
+func (t TopicDeliveryPolicy) String() string {
+	switch t {
+	case DeliveryPolicyAtMostOnce:
+		return "AT_MOST_ONCE"
+	case DeliveryPolicyAtLeastOnce:
+		return "AT_LEAST_ONCE"
+	default:
+		return fmt.Sprintf("%d", t)
+	}
+}
 
 type Topic = storage.TopicStore
 
@@ -27,17 +47,19 @@ func NewTopicProcessor() *topicProcessor {
 }
 
 func (t *topicProcessor) CreateTopic(ctx context.Context, topic Topic) (Topic, error) {
-	//Validate stuff
-
-	topic, err := GetStore().CreateTopic(topic)
+	err := validate.Struct(topic)
+	if err != nil {
+		return Topic{}, err.(validator.ValidationErrors)
+	}
+	out, err := GetStore().CreateTopic(ctx, topic)
 	if err != nil {
 		return Topic{}, err
 	}
-	return topic, nil
+	return out, nil
 }
 
 func (t *topicProcessor) GetActiveTopic(ctx context.Context) ([]Topic, error) {
-	topics, err := GetStore().GetActiveTopic()
+	topics, err := GetStore().GetActiveTopic(ctx)
 	if err != nil {
 		return []Topic{}, err
 	}

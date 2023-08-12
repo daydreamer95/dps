@@ -3,6 +3,8 @@ package pkg
 import (
 	"context"
 	"dps/internal/pkg/dps_pb"
+	"dps/logger"
+	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -61,11 +63,12 @@ func (d *RouterGrpc) CreateTopic(ctx context.Context, req *dps_pb.CreateTopicReq
 	t := Topic{
 		Name:          req.TopicName,
 		Active:        uint(TopicStatusActive),
-		DeliverPolicy: string(req.DeliverPolicy),
+		DeliverPolicy: TopicDeliveryPolicy(req.DeliverPolicy).String(),
 	}
 	topic, err := d.topicProcessor.CreateTopic(ctx, t)
 	if err != nil {
-		return &dps_pb.CreateTopicRes{}, status.New(codes.Internal, err.Error()).Err()
+		logger.Error(fmt.Sprintf("GRPC/CreateTopic occur error [%v]", err.Error()))
+		return &dps_pb.CreateTopicRes{}, status.New(codes.InvalidArgument, err.Error()).Err()
 	}
 
 	return &dps_pb.CreateTopicRes{
