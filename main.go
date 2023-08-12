@@ -28,7 +28,9 @@ func main() {
 	dequeWorker := pkg.NewDequeueWorker(ctx, d)
 	go dequeWorker.Start()
 
-	srv := pkg.NewGrpcServer(r)
+	topicProcessor := pkg.NewTopicProcessor()
+	itemProcessor := pkg.NewItemProcessor()
+	srv := pkg.NewGrpcServer(r, topicProcessor, itemProcessor)
 	go srv.StartListenAndServer()
 
 	c := make(chan os.Signal)

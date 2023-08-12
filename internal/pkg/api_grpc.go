@@ -10,12 +10,18 @@ import (
 
 type RouterGrpc struct {
 	dps_pb.UnimplementedDpsServiceServer
-	rpw IReplenishsesWorker
+	rpw            IReplenishsesWorker
+	topicProcessor ITopicProcessor
+	itemProcessor  IItemProcessor
 }
 
-func NewRouterGrpc(rpw IReplenishsesWorker) *RouterGrpc {
+func NewRouterGrpc(rpw IReplenishsesWorker,
+	topicProcessor ITopicProcessor,
+	itemProcessor IItemProcessor) *RouterGrpc {
 	return &RouterGrpc{
-		rpw: rpw,
+		rpw:            rpw,
+		topicProcessor: topicProcessor,
+		itemProcessor:  itemProcessor,
 	}
 }
 
@@ -35,8 +41,8 @@ func (d *RouterGrpc) NAck(context.Context, *dps_pb.NAckReq) (*empty.Empty, error
 	return nil, nil
 }
 
-func (d *RouterGrpc) GetActiveTopics(context.Context, *empty.Empty) (*dps_pb.GetActiveTopicsRes, error) {
-	topics, err := GetStore().GetActiveTopic()
+func (d *RouterGrpc) GetActiveTopics(ctx context.Context, req *empty.Empty) (*dps_pb.GetActiveTopicsRes, error) {
+	topics, err := d.topicProcessor.GetActiveTopic(ctx)
 	if err != nil {
 		return &dps_pb.GetActiveTopicsRes{}, status.New(codes.Internal, err.Error()).Err()
 	}
@@ -48,31 +54,24 @@ func (d *RouterGrpc) GetActiveTopics(context.Context, *empty.Empty) (*dps_pb.Get
 			DeliveryPolicy: t.DeliverPolicy,
 		})
 	}
-	return nil, nil
+	return out, nil
 }
 
 func (d *RouterGrpc) CreateTopic(ctx context.Context, req *dps_pb.CreateTopicReq) (*dps_pb.CreateTopicRes, error) {
 	t := Topic{
 		Name:          req.TopicName,
-		Active:        TopicStatusActive,
+		Active:        uint(TopicStatusActive),
 		DeliverPolicy: string(req.DeliverPolicy),
 	}
-	topic, err := GetStore().CreateTopic(t)
+	topic, err := d.topicProcessor.CreateTopic(ctx, t)
 	if err != nil {
 		return &dps_pb.CreateTopicRes{}, status.New(codes.Internal, err.Error()).Err()
-	}
-
-	var statusTopic dps_pb.TopicActive
-	if topic.Active == TopicStatusActive {
-		statusTopic = dps_pb.TopicActive_ACTIVE
-	} else {
-		statusTopic = dps_pb.TopicActive_INACTIVE
 	}
 
 	return &dps_pb.CreateTopicRes{
 		TopicId:        uint32(topic.Id),
 		Name:           topic.Name,
-		Active:         statusTopic,
+		Active:         dps_pb.TopicActive(topic.Active),
 		DeliveryPolicy: topic.DeliverPolicy,
 	}, nil
 }

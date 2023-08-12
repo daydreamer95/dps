@@ -1,6 +1,7 @@
 package logger
 
 import (
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -21,6 +22,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	grpc_zap.ReplaceGrpcLoggerV2(zapLog)
 }
 
 func Info(message string, fields ...zap.Field) {

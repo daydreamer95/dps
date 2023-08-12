@@ -13,11 +13,15 @@ type DpsServer struct {
 	grpcSrv *grpc.Server
 }
 
-func NewGrpcServer(rpw IReplenishsesWorker) *DpsServer {
+func NewGrpcServer(rpw IReplenishsesWorker,
+	topicProcessor ITopicProcessor,
+	itemProcessor IItemProcessor) *DpsServer {
 	out := &DpsServer{}
 	var opts []grpc.ServerOption
 	out.grpcSrv = grpc.NewServer(opts...)
-	dps_pb.RegisterDpsServiceServer(out.grpcSrv, NewRouterGrpc(rpw))
+	dps_pb.RegisterDpsServiceServer(
+		out.grpcSrv,
+		NewRouterGrpc(rpw, topicProcessor, itemProcessor))
 	return out
 }
 

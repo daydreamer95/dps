@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"dps/internal/pkg/common"
 	"dps/logger"
 	"fmt"
 	"sync"
@@ -87,7 +88,7 @@ func (r *ReplenishesWorker) Push(items []Item) (bool, error) {
 func (r *ReplenishesWorker) Pop(topicId uint, count int) ([]Item, error) {
 	pfBuffer := r.preBuffers[topicId]
 	if pfBuffer == nil {
-		return nil, ErrNotFoundTopic
+		return nil, common.ErrNotFoundTopic
 	}
 
 	var result []Item
