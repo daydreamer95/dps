@@ -30,9 +30,10 @@ func NewRouterGrpc(rpw IReplenishsesWorker,
 
 func (d *RouterGrpc) Publish(ctx context.Context, req *dps_pb.PublishReq) (*dps_pb.PublishRes, error) {
 	topic, err := d.topicProcessor.GetTopicByName(ctx, req.GetItem().TopicName)
+	fmt.Println("publish topic name:", req.GetItem().TopicName)
 	if err != nil {
 		logger.Error(fmt.Sprintf("GRPC/Publish occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetItem().TopicName))
-		return &dps_pb.PublishRes{}, status.New(codes.Internal, err.Error()).Err()
+		return &dps_pb.PublishRes{}, status.New(codes.Internal, fmt.Sprintf("GRPC/Publish occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetItem().TopicName)).Err()
 	}
 
 	item := Item{
@@ -46,7 +47,7 @@ func (d *RouterGrpc) Publish(ctx context.Context, req *dps_pb.PublishReq) (*dps_
 	createItem, err := d.itemProcessor.CreateItem(ctx, item)
 	if err != nil {
 		logger.Error(fmt.Sprintf("GRPC/Publish occur error [%v]", err.Error()))
-		return &dps_pb.PublishRes{}, status.New(codes.Internal, err.Error()).Err()
+		return &dps_pb.PublishRes{}, status.New(codes.Internal, fmt.Sprintf("GRPC/Publish occur error [%v]", err.Error())).Err()
 	}
 
 	return &dps_pb.PublishRes{
@@ -71,9 +72,7 @@ func (d *RouterGrpc) Dequeue(ctx context.Context, req *dps_pb.DequeueReq) (*dps_
 	dequeItems, err := d.rpw.Pop(topic.Id, int(req.Count))
 	if err != nil {
 		logger.Error(fmt.Sprintf("GRPC/Dequeue occur error [%v]", err.Error()))
-		return &dps_pb.DequeueRes{
-			Items: nil,
-		}, status.New(codes.Internal, err.Error()).Err()
+		return &dps_pb.DequeueRes{}, status.New(codes.Internal, err.Error()).Err()
 	}
 	var out []*dps_pb.ItemRes
 	for _, deqItem := range dequeItems {

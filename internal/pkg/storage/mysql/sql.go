@@ -21,13 +21,13 @@ func (s *Store) Ping() error {
 
 func (s *Store) GetTopicById(ctx context.Context, id uint) (storage.TopicStore, error) {
 	var topic storage.TopicStore
-	err := dbGet().WithContext(ctx).Where("id = ?", id).Find(&topic).Error
+	err := dbGet().WithContext(ctx).Where("id = ?", id).First(&topic).Error
 	return topic, err
 }
 
 func (s *Store) GetTopicByName(ctx context.Context, name string) (storage.TopicStore, error) {
 	var topic storage.TopicStore
-	err := dbGet().WithContext(ctx).Where("name = ?", name).Find(&topic).Error
+	err := dbGet().WithContext(ctx).Where("name = ?", name).First(&topic).Error
 	return topic, err
 }
 
