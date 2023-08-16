@@ -19,18 +19,18 @@ type IReplenishsesWorker interface {
 type ReplenishesWorker struct {
 	ctx             context.Context
 	mu              sync.Mutex
-	createTopicChan <-chan Topic
+	updateTopicChan <-chan Topic
 	deferItemChan   chan Item
 	// preBuffers Maps of prefetch buffers with topic id was key
 	preBuffers map[uint]*PrefetchBuffer
 }
 
 func NewReplenishesWorker(ctx context.Context,
-	createTopicChan <-chan Topic,
+	updateTopicChan <-chan Topic,
 	deferItemChan chan Item) *ReplenishesWorker {
 	out := &ReplenishesWorker{
 		ctx:             ctx,
-		createTopicChan: createTopicChan,
+		updateTopicChan: updateTopicChan,
 		deferItemChan:   deferItemChan,
 	}
 	out.preBuffers = map[uint]*PrefetchBuffer{}
@@ -49,20 +49,20 @@ func (r *ReplenishesWorker) Start() {
 		pb := NewPrefetchBuffer(r.ctx, topic.Id)
 		r.preBuffers[topic.Id] = pb
 	}
-	logger.Info("[ReplenishesWorker] Start listen on createTopicChan and deferItemChan")
+	logger.Info("[ReplenishesWorker] Start listen on updateTopicChan and deferItemChan")
 	for {
 		select {
-		case newTopics := <-r.createTopicChan:
+		case updatedTopic := <-r.updateTopicChan:
 			r.mu.Lock()
-			logger.Info(fmt.Sprintf("[ReplenishesWorker] Receive new topic from chan [%v]", newTopics))
-			topic := r.preBuffers[newTopics.Id]
+			logger.Info(fmt.Sprintf("[ReplenishesWorker] Receive updated from chan [%v]", updatedTopic))
+			topic := r.preBuffers[updatedTopic.Id]
 			if topic != nil {
 				logger.Fatal(fmt.Sprintf("[ReplenishesWorker] Topics name [%v] already exists. Something wrong", topic))
 				return
 			}
-			logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topicname [%v]", newTopics))
-			pb := NewPrefetchBuffer(r.ctx, newTopics.Id)
-			r.preBuffers[newTopics.Id] = pb
+			logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topicname [%v]", updatedTopic))
+			pb := NewPrefetchBuffer(r.ctx, updatedTopic.Id)
+			r.preBuffers[updatedTopic.Id] = pb
 			r.mu.Unlock()
 		case deferItem := <-r.deferItemChan:
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item has defered [%+v]", deferItem))

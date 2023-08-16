@@ -10,7 +10,7 @@ service DpsService {
   rpc Publish(PublishReq) returns (PublishRes) {}
   rpc GetActiveTopics(google.protobuf.Empty) returns (GetActiveTopicsRes){}
   rpc CreateTopic(CreateTopicReq) returns (CreateTopicRes) {}
-  rpc Dequeue(DequeueReq) returns (google.protobuf.Empty) {}
+  rpc Dequeue(DequeueReq) returns (DequeueRes) {}
   rpc Ack(AckReq) returns (google.protobuf.Empty) {}
   rpc NAck(NAckReq) returns (google.protobuf.Empty) {}
 }
@@ -47,24 +47,41 @@ message PublishReq {
 }
 
 message PublishRes {
-  int32 Status = 1;
-  string Message = 2;
+  string Id = 1;
+  uint32 TopicId = 2;
+  int32 Priority = 3;
+  bytes Payload = 4;
+  bytes Metadata = 5;
+  int64 DeliverAfter = 6;
+  string Status = 7;
 }
 
 message Item {
-  string TopicId = 1;
+  string TopicName = 1;
   int32 Priority = 2; // Lower number mean higher priority
   bytes Payload = 3; // immutable binary blob. Feel free to put what ever u want
   bytes Metadata = 4; // mutable binary blob. Feel free to put what ever u want
-  int32 DeliverAfter = 5; // Timestamp where item should be dequeue
+  int64 DeliverAfter = 5; // Timestamp where item should be dequeue
 }
 
 message DequeueReq {
-  map<string,int32> DequeueTopic = 1;
+  string TopicName = 1;
+  uint32 Count = 2;
 }
 
 message DequeueRes {
-  repeated Item items = 1;
+  repeated ItemRes items = 1;
+}
+
+message ItemRes {
+  string Id = 1;
+  uint32 TopicId = 2;
+  int32 Priority = 3;
+  bytes Payload = 4;
+  bytes Metadata = 5;
+  int64 DeliverAfter = 6;
+  string Status = 7;
+  uint32 LeaseDuration = 8;
 }
 
 message AckReq {

@@ -37,6 +37,7 @@ type Topic = storage.TopicStore
 type ITopicProcessor interface {
 	CreateTopic(ctx context.Context, topic Topic) (Topic, error)
 	GetActiveTopic(ctx context.Context) ([]Topic, error)
+	GetTopicByName(ctx context.Context, name string) (Topic, error)
 }
 
 type topicProcessor struct {
@@ -64,4 +65,12 @@ func (t *topicProcessor) GetActiveTopic(ctx context.Context) ([]Topic, error) {
 		return []Topic{}, err
 	}
 	return topics, nil
+}
+
+func (t *topicProcessor) GetTopicByName(ctx context.Context, name string) (Topic, error) {
+	topic, err := GetStore().GetTopicByName(ctx, name)
+	if err != nil {
+		return Topic{}, err
+	}
+	return topic, nil
 }

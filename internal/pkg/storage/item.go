@@ -2,6 +2,8 @@ package storage
 
 import (
 	"dps/internal/pkg/dps_util"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -18,6 +20,12 @@ type ItemStore struct {
 }
 
 // TableName
-func (t *ItemStore) TableName() string {
+func (i *ItemStore) TableName() string {
 	return "items"
+}
+
+func (i *ItemStore) BeforeCreate(tx *gorm.DB) (err error) {
+	// UUID version 4
+	i.Id = uuid.NewString()
+	return
 }

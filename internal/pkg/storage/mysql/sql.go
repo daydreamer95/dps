@@ -19,6 +19,18 @@ func (s *Store) Ping() error {
 	return dbGet().ToSQLDB().Ping()
 }
 
+func (s *Store) GetTopicById(ctx context.Context, id uint) (storage.TopicStore, error) {
+	var topic storage.TopicStore
+	err := dbGet().WithContext(ctx).Where("id = ?", id).Find(&topic).Error
+	return topic, err
+}
+
+func (s *Store) GetTopicByName(ctx context.Context, name string) (storage.TopicStore, error) {
+	var topic storage.TopicStore
+	err := dbGet().WithContext(ctx).Where("name = ?", name).Find(&topic).Error
+	return topic, err
+}
+
 func (s *Store) CreateTopic(ctx context.Context, store storage.TopicStore) (storage.TopicStore, error) {
 	err := dbGet().Create(&store).Error
 	return store, err
@@ -26,13 +38,19 @@ func (s *Store) CreateTopic(ctx context.Context, store storage.TopicStore) (stor
 
 func (s *Store) GetActiveTopic(ctx context.Context) ([]storage.TopicStore, error) {
 	var storages []storage.TopicStore
-	err := dbGet().Where("").Find(&storages).Error
+	err := dbGet().WithContext(ctx).Where("").Find(&storages).Error
 	return storages, err
+}
+
+func (s *Store) CreateItems(ctx context.Context, item storage.ItemStore) (storage.ItemStore, error) {
+	err := dbGet().WithContext(ctx).Create(&item).Error
+	return item, err
 }
 
 func (s *Store) FetchItemReadyToDelivery(ctx context.Context, status string) ([]storage.ItemStore, error) {
 	var items []storage.ItemStore
-	err := dbGet().Where("deliver_after >= ? and status != ?", time.Now(), status).
+	err := dbGet().WithContext(ctx).
+		Where("deliver_after >= ? and status != ?", time.Now(), status).
 		Find(&items).Error
 	return items, err
 }

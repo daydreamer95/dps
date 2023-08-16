@@ -3,7 +3,10 @@ module dps
 go 1.19
 
 require (
+	github.com/go-playground/validator/v10 v10.15.0
 	github.com/golang/protobuf v1.5.3
+	github.com/google/uuid v1.3.0
+	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.56.2
 	google.golang.org/protobuf v1.31.0
@@ -17,9 +20,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.15.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.3.1 // indirect
