@@ -17,10 +17,10 @@ type IReplenishsesWorker interface {
 }
 
 type ReplenishesWorker struct {
-	ctx             context.Context
-	mu              sync.Mutex
-	updateTopicChan <-chan Topic
-	deferItemChan   chan Item
+	ctx              context.Context
+	mu               sync.Mutex
+	updateTopicChan  <-chan Topic
+	dequeuedItemChan chan Item
 	// preBuffers Maps of prefetch buffers with topic id was key
 	preBuffers map[uint]*PrefetchBuffer
 }
@@ -29,9 +29,9 @@ func NewReplenishesWorker(ctx context.Context,
 	updateTopicChan <-chan Topic,
 	deferItemChan chan Item) *ReplenishesWorker {
 	out := &ReplenishesWorker{
-		ctx:             ctx,
-		updateTopicChan: updateTopicChan,
-		deferItemChan:   deferItemChan,
+		ctx:              ctx,
+		updateTopicChan:  updateTopicChan,
+		dequeuedItemChan: deferItemChan,
 	}
 	out.preBuffers = map[uint]*PrefetchBuffer{}
 	return out
@@ -49,7 +49,7 @@ func (r *ReplenishesWorker) Start() {
 		pb := NewPrefetchBuffer(r.ctx, topic.Id)
 		r.preBuffers[topic.Id] = pb
 	}
-	logger.Info("[ReplenishesWorker] Start listen on updateTopicChan and deferItemChan")
+	logger.Info("[ReplenishesWorker] Start listen on updateTopicChan and dequeuedItemChan")
 	for {
 		select {
 		case updatedTopic := <-r.updateTopicChan:
@@ -57,15 +57,21 @@ func (r *ReplenishesWorker) Start() {
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] Receive updated from chan [%v]", updatedTopic))
 			topic := r.preBuffers[updatedTopic.Id]
 			if topic != nil {
-				logger.Fatal(fmt.Sprintf("[ReplenishesWorker] Topics name [%v] already exists. Something wrong", topic))
+				logger.Error(fmt.Sprintf("[ReplenishesWorker] Topics name [%v] already exists. Something wrong", topic))
 				return
 			}
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topicname [%v]", updatedTopic))
 			pb := NewPrefetchBuffer(r.ctx, updatedTopic.Id)
 			r.preBuffers[updatedTopic.Id] = pb
 			r.mu.Unlock()
-		case deferItem := <-r.deferItemChan:
-			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item has defered [%+v]", deferItem))
+		case dequeuedItem := <-r.dequeuedItemChan:
+			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item has dequeued [%+v]", dequeuedItem))
+			pb := r.preBuffers[dequeuedItem.TopicId]
+			if pb == nil {
+				logger.Error(fmt.Sprintf("[ReplenishesWorker] Topics Id [%v] not exists. Something wrong", dequeuedItem.TopicId))
+				return
+			}
+			pb.inMemPq.Insert(dequeuedItem)
 			//TODO: do this
 			return
 		}
