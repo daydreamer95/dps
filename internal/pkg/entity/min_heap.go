@@ -52,6 +52,43 @@ func (m *MinHeap) Poll() (Item, error) {
 	return out, nil
 }
 
+func (m *MinHeap) Delete(msg Item) bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	msgIdx := m.search(msg)
+	if msgIdx == -1 {
+		return false
+	}
+
+	if msgIdx == m.Length-1 {
+		m.Length--
+		m.Data = m.Data[0:m.Length]
+		return true
+	}
+
+	//Swap last and idx
+	m.Data[msgIdx], m.Data[m.Length-1] = m.Data[m.Length-1], m.Data[msgIdx]
+	m.Length--
+	m.Data = m.Data[0:m.Length]
+	if m.Data[parent(msgIdx)].Priority > m.Data[msgIdx].Priority {
+		m.heapifyUp(msgIdx)
+	} else {
+		m.heapifyDown(msgIdx)
+	}
+	return true
+}
+
+// search: Search item in MinHeap based on Item.id
+func (m *MinHeap) search(msg Item) int {
+	for index, item := range m.Data {
+		if msg.Id == item.Id {
+			return index
+		}
+	}
+	return -1
+}
+
 func (m *MinHeap) heapifyDown(index int) {
 	if index > m.Length {
 		return
@@ -60,7 +97,7 @@ func (m *MinHeap) heapifyDown(index int) {
 	lIndex := leftChild(index)
 	rIndex := rightChild(index)
 
-	if index >= m.Length || lIndex >= m.Length {
+	if index >= m.Length || lIndex >= m.Length || rIndex >= m.Length {
 		return
 	}
 
@@ -109,4 +146,9 @@ func leftChild(index int) int {
 
 func rightChild(index int) int {
 	return index*2 + 2
+}
+
+// start starts goroutines for item expiry check
+func (m *MinHeap) start() {
+
 }
