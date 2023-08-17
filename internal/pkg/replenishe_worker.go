@@ -3,6 +3,7 @@ package pkg
 import (
 	"context"
 	"dps/internal/pkg/common"
+	"dps/internal/pkg/entity"
 	"dps/logger"
 	"fmt"
 	"sync"
@@ -10,24 +11,24 @@ import (
 
 type IReplenishsesWorker interface {
 	Start()
-	Push(items []Item) (bool, error)
+	Push(items []entity.Item) (bool, error)
 	//Pop Get item responding to request dto. Simply get items from
 	// prefetch buffers and returns
-	Pop(topicId uint, count int) ([]Item, error)
+	Pop(topicId uint, count int) ([]entity.Item, error)
 }
 
 type ReplenishesWorker struct {
 	ctx              context.Context
 	mu               sync.Mutex
-	updateTopicChan  <-chan Topic
-	dequeuedItemChan chan Item
+	updateTopicChan  <-chan entity.Topic
+	dequeuedItemChan chan entity.Item
 	// preBuffers Maps of prefetch buffers with topic id was key
 	preBuffers map[uint]*PrefetchBuffer
 }
 
 func NewReplenishesWorker(ctx context.Context,
-	updateTopicChan <-chan Topic,
-	deferItemChan chan Item) *ReplenishesWorker {
+	updateTopicChan <-chan entity.Topic,
+	deferItemChan chan entity.Item) *ReplenishesWorker {
 	out := &ReplenishesWorker{
 		ctx:              ctx,
 		updateTopicChan:  updateTopicChan,
@@ -39,7 +40,7 @@ func NewReplenishesWorker(ctx context.Context,
 
 func (r *ReplenishesWorker) Start() {
 	logger.Info("Replenishes_Worker start!")
-	t, err := GetStore().GetActiveTopic(r.ctx)
+	t, err := entity.GetStore().GetActiveTopic(r.ctx)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("[ReplenishesWorker]"))
 	}
@@ -71,7 +72,7 @@ func (r *ReplenishesWorker) Start() {
 				logger.Error(fmt.Sprintf("[ReplenishesWorker] Topics Id [%v] not exists. Something wrong", dequeuedItem.TopicId))
 				return
 			}
-			_, err = r.Push([]Item{dequeuedItem})
+			_, err = r.Push([]entity.Item{dequeuedItem})
 			if err != nil {
 				logger.Error(fmt.Sprintf("[ReplenishesWorker] Push item to in-memory Priority Queues cause an err [%v]. Dequeued-Item [%v]", err, dequeuedItem.TopicId))
 				return
@@ -82,7 +83,7 @@ func (r *ReplenishesWorker) Start() {
 	}
 }
 
-func (r *ReplenishesWorker) Push(items []Item) (bool, error) {
+func (r *ReplenishesWorker) Push(items []entity.Item) (bool, error) {
 	for _, item := range items {
 		pfBuffer := r.preBuffers[item.TopicId]
 		if pfBuffer == nil {
@@ -95,13 +96,13 @@ func (r *ReplenishesWorker) Push(items []Item) (bool, error) {
 	return true, nil
 }
 
-func (r *ReplenishesWorker) Pop(topicId uint, count int) ([]Item, error) {
+func (r *ReplenishesWorker) Pop(topicId uint, count int) ([]entity.Item, error) {
 	pfBuffer := r.preBuffers[topicId]
 	if pfBuffer == nil {
 		return nil, common.ErrNotFoundTopic
 	}
 
-	var result []Item
+	var result []entity.Item
 	for i := 0; i < count; i++ {
 		polled, err := pfBuffer.inMemPq.Poll()
 		if err != nil {

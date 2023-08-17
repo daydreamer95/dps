@@ -4,6 +4,7 @@ import (
 	"context"
 	"dps/internal/pkg"
 	"dps/internal/pkg/config"
+	"dps/internal/pkg/entity"
 	"dps/logger"
 	"flag"
 	"fmt"
@@ -19,8 +20,8 @@ func main() {
 	ctx := context.Background()
 	config.MustLoadConfig(*confFile)
 
-	ctc := make(chan pkg.Topic)
-	d := make(chan pkg.Item)
+	ctc := make(chan entity.Topic)
+	d := make(chan entity.Item)
 	var r pkg.IReplenishsesWorker
 	r = pkg.NewReplenishesWorker(ctx, ctc, d)
 	go r.Start()
@@ -28,8 +29,8 @@ func main() {
 	dequeWorker := pkg.NewDequeueWorker(ctx, d)
 	go dequeWorker.Start()
 
-	topicProcessor := pkg.NewTopicProcessor()
-	itemProcessor := pkg.NewItemProcessor()
+	topicProcessor := entity.NewTopicProcessor()
+	itemProcessor := entity.NewItemProcessor()
 	srv := pkg.NewGrpcServer(r, topicProcessor, itemProcessor)
 	go srv.StartListenAndServer()
 

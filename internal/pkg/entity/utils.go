@@ -1,4 +1,4 @@
-package pkg
+package entity
 
 import (
 	"dps/internal/pkg/storage"

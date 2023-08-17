@@ -3,6 +3,7 @@ package pkg
 import (
 	"dps/internal/pkg/config"
 	"dps/internal/pkg/dps_pb"
+	"dps/internal/pkg/entity"
 	"dps/logger"
 	"fmt"
 	"google.golang.org/grpc"
@@ -14,8 +15,8 @@ type DpsServer struct {
 }
 
 func NewGrpcServer(rpw IReplenishsesWorker,
-	topicProcessor ITopicProcessor,
-	itemProcessor IItemProcessor) *DpsServer {
+	topicProcessor entity.ITopicProcessor,
+	itemProcessor entity.IItemProcessor) *DpsServer {
 	out := &DpsServer{}
 	var opts []grpc.ServerOption
 	out.grpcSrv = grpc.NewServer(opts...)

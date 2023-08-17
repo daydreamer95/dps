@@ -3,6 +3,7 @@ package pkg
 import (
 	"context"
 	"dps/internal/pkg/dps_pb"
+	"dps/internal/pkg/entity"
 	"dps/logger"
 	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
@@ -14,13 +15,13 @@ import (
 type RouterGrpc struct {
 	dps_pb.UnimplementedDpsServiceServer
 	rpw            IReplenishsesWorker
-	topicProcessor ITopicProcessor
-	itemProcessor  IItemProcessor
+	topicProcessor entity.ITopicProcessor
+	itemProcessor  entity.IItemProcessor
 }
 
 func NewRouterGrpc(rpw IReplenishsesWorker,
-	topicProcessor ITopicProcessor,
-	itemProcessor IItemProcessor) *RouterGrpc {
+	topicProcessor entity.ITopicProcessor,
+	itemProcessor entity.IItemProcessor) *RouterGrpc {
 	return &RouterGrpc{
 		rpw:            rpw,
 		topicProcessor: topicProcessor,
@@ -36,7 +37,7 @@ func (d *RouterGrpc) Publish(ctx context.Context, req *dps_pb.PublishReq) (*dps_
 		return &dps_pb.PublishRes{}, status.New(codes.Internal, fmt.Sprintf("GRPC/Publish occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetItem().TopicName)).Err()
 	}
 
-	item := Item{
+	item := entity.Item{
 		TopicId:       topic.Id,
 		Priority:      req.Item.Priority,
 		DeliverAfter:  time.Unix(req.Item.DeliverAfter, 0),
@@ -116,10 +117,10 @@ func (d *RouterGrpc) GetActiveTopics(ctx context.Context, req *empty.Empty) (*dp
 }
 
 func (d *RouterGrpc) CreateTopic(ctx context.Context, req *dps_pb.CreateTopicReq) (*dps_pb.CreateTopicRes, error) {
-	t := Topic{
+	t := entity.Topic{
 		Name:          req.TopicName,
-		Active:        uint(TopicStatusActive),
-		DeliverPolicy: TopicDeliveryPolicy(req.DeliverPolicy).String(),
+		Active:        uint(entity.TopicStatusActive),
+		DeliverPolicy: entity.TopicDeliveryPolicy(req.DeliverPolicy).String(),
 	}
 	topic, err := d.topicProcessor.CreateTopic(ctx, t)
 	if err != nil {

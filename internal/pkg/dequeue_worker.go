@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"dps/internal/pkg/entity"
 	"dps/logger"
 	"fmt"
 	"time"
@@ -9,12 +10,12 @@ import (
 
 type DequeueWorker struct {
 	ctx          context.Context
-	dequeuedChan chan<- Item
+	dequeuedChan chan<- entity.Item
 }
 
 func NewDequeueWorker(
 	ctx context.Context,
-	dequeuedChan chan<- Item) *DequeueWorker {
+	dequeuedChan chan<- entity.Item) *DequeueWorker {
 	logger.Info("Success init DequeueWorker")
 	return &DequeueWorker{
 		ctx:          ctx,
@@ -40,7 +41,7 @@ func (d *DequeueWorker) Start() {
 }
 
 // PullItemFromSource first I will fake it
-func (d *DequeueWorker) PullItemFromSource() ([]Item, error) {
+func (d *DequeueWorker) PullItemFromSource() ([]entity.Item, error) {
 	// TODO: implement status
-	return GetStore().FetchItemReadyToDelivery(d.ctx, ItemStatusInitialize)
+	return entity.GetStore().FetchItemReadyToDelivery(d.ctx, entity.ItemStatusInitialize)
 }
