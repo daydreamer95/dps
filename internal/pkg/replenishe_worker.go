@@ -71,7 +71,11 @@ func (r *ReplenishesWorker) Start() {
 				logger.Error(fmt.Sprintf("[ReplenishesWorker] Topics Id [%v] not exists. Something wrong", dequeuedItem.TopicId))
 				return
 			}
-			pb.inMemPq.Insert(dequeuedItem)
+			_, err = r.Push([]Item{dequeuedItem})
+			if err != nil {
+				logger.Error(fmt.Sprintf("[ReplenishesWorker] Push item to in-memory Priority Queues cause an err [%v]. Dequeued-Item [%v]", err, dequeuedItem.TopicId))
+				return
+			}
 			//TODO: do this
 			return
 		}
