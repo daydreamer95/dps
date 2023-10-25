@@ -50,7 +50,8 @@ func (s *Store) CreateItems(ctx context.Context, item storage.ItemStore) (storag
 func (s *Store) FetchItemReadyToDelivery(ctx context.Context, status string) ([]storage.ItemStore, error) {
 	var items []storage.ItemStore
 	err := dbGet().WithContext(ctx).
-		Where("deliver_after >= ? and status != ?", time.Now(), status).
+		Debug().
+		Where("deliver_after <= ? and status = ?", time.Now(), status).
 		Find(&items).Error
 	return items, err
 }

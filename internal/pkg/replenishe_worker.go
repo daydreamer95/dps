@@ -46,7 +46,7 @@ func (r *ReplenishesWorker) Start() {
 	}
 
 	for _, topic := range t {
-		logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topic [%v]", topic))
+		logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topic [%+v]", topic))
 		pb := NewPrefetchBuffer(r.ctx, topic.Id)
 		r.preBuffers[topic.Id] = pb
 	}
@@ -59,26 +59,24 @@ func (r *ReplenishesWorker) Start() {
 			topic := r.preBuffers[updatedTopic.Id]
 			if topic != nil {
 				logger.Error(fmt.Sprintf("[ReplenishesWorker] Topics name [%v] already exists. Something wrong", topic))
-				return
+				break
 			}
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topicname [%v]", updatedTopic))
 			pb := NewPrefetchBuffer(r.ctx, updatedTopic.Id)
 			r.preBuffers[updatedTopic.Id] = pb
 			r.mu.Unlock()
 		case dequeuedItem := <-r.dequeuedItemChan:
-			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item has dequeued [%+v]", dequeuedItem))
+			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item has pull from db [%+v]", dequeuedItem))
 			pb := r.preBuffers[dequeuedItem.TopicId]
 			if pb == nil {
 				logger.Error(fmt.Sprintf("[ReplenishesWorker] Topics Id [%v] not exists. Something wrong", dequeuedItem.TopicId))
-				return
+				break
 			}
 			_, err = r.Push([]entity.Item{dequeuedItem})
 			if err != nil {
 				logger.Error(fmt.Sprintf("[ReplenishesWorker] Push item to in-memory Priority Queues cause an err [%v]. Dequeued-Item [%v]", err, dequeuedItem.TopicId))
-				return
+				break
 			}
-			//TODO: do this
-			return
 		}
 	}
 }
@@ -91,7 +89,7 @@ func (r *ReplenishesWorker) Push(items []entity.Item) (bool, error) {
 			continue
 		}
 		pfBuffer.inMemPq.Insert(item)
-		fmt.Println("Insert item to prefetch buffer done:", item)
+		logger.Info(fmt.Sprintf("Insert item to prefetch buffer done: [%+v]", item))
 	}
 	return true, nil
 }

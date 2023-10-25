@@ -27,12 +27,14 @@ func (d *DequeueWorker) Start() {
 	logger.Info("Dequeue Worker start polling job")
 	go func() {
 		for range time.Tick(time.Second * 1) {
+			fmt.Println("Tick again")
 			items, err := d.PullItemFromSource()
 			if err != nil {
 				logger.Error(fmt.Sprintf("[DequeueWorker] PullItemFromSource err: %v", err))
 				return
 			}
 			for _, item := range items {
+				fmt.Println("He with item:", item)
 				d.dequeuedChan <- item
 			}
 		}
