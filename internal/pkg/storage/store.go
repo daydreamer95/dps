@@ -10,4 +10,5 @@ type Store interface {
 	CreateItems(ctx context.Context, items ItemStore) (ItemStore, error)
 	GetActiveTopic(ctx context.Context) ([]TopicStore, error)
 	FetchItemReadyToDelivery(ctx context.Context, status string) ([]ItemStore, error)
+	UpdateItemsStatusByIds(ctx context.Context, ids []string, status string) error
 }

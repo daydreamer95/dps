@@ -50,10 +50,18 @@ func (s *Store) CreateItems(ctx context.Context, item storage.ItemStore) (storag
 func (s *Store) FetchItemReadyToDelivery(ctx context.Context, status string) ([]storage.ItemStore, error) {
 	var items []storage.ItemStore
 	err := dbGet().WithContext(ctx).
-		Debug().
 		Where("deliver_after <= ? and status = ?", time.Now(), status).
 		Find(&items).Error
 	return items, err
+}
+
+func (s *Store) UpdateItemsStatusByIds(ctx context.Context, ids []string, status string) error {
+	err := dbGet().WithContext(ctx).
+		Model(&storage.ItemStore{}).
+		Debug().
+		Where("id IN (?)", ids).
+		Update("status", status).Error
+	return err
 }
 
 // SetDBConn sets db conn pool

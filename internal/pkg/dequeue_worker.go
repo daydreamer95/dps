@@ -26,15 +26,14 @@ func NewDequeueWorker(
 func (d *DequeueWorker) Start() {
 	logger.Info("Dequeue Worker start polling job")
 	go func() {
+		//TODO: config this tick
 		for range time.Tick(time.Second * 1) {
-			fmt.Println("Tick again")
 			items, err := d.PullItemFromSource()
 			if err != nil {
 				logger.Error(fmt.Sprintf("[DequeueWorker] PullItemFromSource err: %v", err))
-				return
+				continue
 			}
 			for _, item := range items {
-				fmt.Println("He with item:", item)
 				d.dequeuedChan <- item
 			}
 		}
@@ -44,6 +43,21 @@ func (d *DequeueWorker) Start() {
 
 // PullItemFromSource first I will fake it
 func (d *DequeueWorker) PullItemFromSource() ([]entity.Item, error) {
-	// TODO: implement status
-	return entity.GetStore().FetchItemReadyToDelivery(d.ctx, entity.ItemStatusInitialize)
+	out, err := entity.GetStore().FetchItemReadyToDelivery(d.ctx, entity.ItemStatusInitialize)
+	if err != nil {
+		return nil, err
+	}
+	if len(out) == 0 {
+		return out, nil
+	}
+	itemIds := make([]string, len(out))
+	for i := 0; i < len(out); i++ {
+		itemIds = append(itemIds, out[i].Id)
+	}
+
+	err = entity.GetStore().UpdateItemsStatusByIds(d.ctx, itemIds, entity.ItemStatusDelivered)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }

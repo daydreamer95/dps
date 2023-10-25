@@ -13,6 +13,7 @@ import (
 const (
 	ItemStatusInitialize     = "INITIALIZE"
 	ItemStatusReadyToDeliver = "READY_TO_DELIVER"
+	ItemStatusDelivered      = "DELIVERED"
 )
 
 type Item = storage.ItemStore
