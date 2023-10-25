@@ -59,7 +59,7 @@ func MustLoadConfig(confFile string) {
 	}
 	scont, err := json.MarshalIndent(&Config, "", "  ")
 	logger.FatalIfError(err)
-	logger.Info(fmt.Sprintf("config file: %s loaded config is: \n%s", confFile, scont))
+	logger.Debug(fmt.Sprintf("config file: %s loaded config is: \n%s", confFile, scont))
 	err = checkConfig(&Config)
 	logger.FatalfIf(err != nil, `config error: '%v'.`, err)
 }

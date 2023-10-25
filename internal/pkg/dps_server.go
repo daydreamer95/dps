@@ -4,6 +4,7 @@ import (
 	"dps/internal/pkg/config"
 	"dps/internal/pkg/dps_pb"
 	"dps/internal/pkg/entity"
+	"dps/internal/pkg/interceptor/recovery"
 	"dps/logger"
 	"fmt"
 	"google.golang.org/grpc"
@@ -19,6 +20,7 @@ func NewGrpcServer(rpw IReplenishsesWorker,
 	itemProcessor entity.IItemProcessor) *DpsServer {
 	out := &DpsServer{}
 	var opts []grpc.ServerOption
+	opts = append(opts, grpc.ChainUnaryInterceptor(recovery.UnaryServerInterceptor()))
 	out.grpcSrv = grpc.NewServer(opts...)
 	dps_pb.RegisterDpsServiceServer(
 		out.grpcSrv,
