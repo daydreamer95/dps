@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"dps/internal/pkg/config"
 	"dps/internal/pkg/dps_pb"
 	"dps/internal/pkg/entity"
@@ -20,7 +21,12 @@ func NewGrpcServer(rpw IReplenishsesWorker,
 	itemProcessor entity.IItemProcessor) *DpsServer {
 	out := &DpsServer{}
 	var opts []grpc.ServerOption
-	opts = append(opts, grpc.ChainUnaryInterceptor(recovery.UnaryServerInterceptor()))
+	opts = append(opts, grpc.ChainUnaryInterceptor(
+		recovery.UnaryServerInterceptor(
+			recovery.WithRecoveryHandlerContext(func(ctx context.Context, p any, req any, info *grpc.UnaryServerInfo) (err error) {
+				logger.Error(fmt.Sprintf("Server panic recovery with message [%v] \n Request: [%v] \n Info: [%v]\n", p, req, info))
+				return
+			}))))
 	out.grpcSrv = grpc.NewServer(opts...)
 	dps_pb.RegisterDpsServiceServer(
 		out.grpcSrv,

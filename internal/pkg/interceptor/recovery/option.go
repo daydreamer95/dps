@@ -1,6 +1,9 @@
 package recovery
 
-import "context"
+import (
+	"context"
+	"google.golang.org/grpc"
+)
 
 var (
 	defaultOptions = &options{
@@ -26,7 +29,7 @@ type Option func(*options)
 // WithRecoveryHandler customizes the function for recovering from a panic.
 func WithRecoveryHandler(f RecoveryHandlerFunc) Option {
 	return func(o *options) {
-		o.recoveryHandlerFunc = RecoveryHandlerFuncContext(func(ctx context.Context, p any) error {
+		o.recoveryHandlerFunc = RecoveryHandlerFuncContext(func(ctx context.Context, p any, req any, info *grpc.UnaryServerInfo) error {
 			return f(p)
 		})
 	}

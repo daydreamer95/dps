@@ -9,14 +9,14 @@ import (
 
 type RecoveryHandlerFunc func(p any) (err error)
 
-type RecoveryHandlerFuncContext func(ctx context.Context, p any) (err error)
+type RecoveryHandlerFuncContext func(ctx context.Context, p any, req any, info *grpc.UnaryServerInfo) (err error)
 
 func UnaryServerInterceptor(opts ...Option) grpc.UnaryServerInterceptor {
 	o := evaluateOptions(opts)
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ any, err error) {
 		defer func() {
 			if r := recover(); r != nil {
-				err = recoverFrom(ctx, r, o.recoveryHandlerFunc)
+				err = recoverFrom(ctx, r, req, info, o.recoveryHandlerFunc)
 			}
 		}()
 
@@ -24,9 +24,9 @@ func UnaryServerInterceptor(opts ...Option) grpc.UnaryServerInterceptor {
 	}
 }
 
-func recoverFrom(ctx context.Context, p any, r RecoveryHandlerFuncContext) error {
+func recoverFrom(ctx context.Context, p any, req any, info *grpc.UnaryServerInfo, r RecoveryHandlerFuncContext) error {
 	if r != nil {
-		return r(ctx, p)
+		return r(ctx, p, req, info)
 	}
 	stack := make([]byte, 64<<10)
 	stack = stack[:runtime.Stack(stack, false)]
