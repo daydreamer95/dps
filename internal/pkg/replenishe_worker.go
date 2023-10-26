@@ -66,7 +66,7 @@ func (r *ReplenishesWorker) Start() {
 			r.preBuffers[updatedTopic.Id] = pb
 			r.mu.Unlock()
 		case dequeuedItem := <-r.dequeuedItemChan:
-			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item has pull from db [%+v]", dequeuedItem))
+			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item Id [%+v] has pull from db.", dequeuedItem.Id))
 			pb := r.preBuffers[dequeuedItem.TopicId]
 			if pb == nil {
 				logger.Error(fmt.Sprintf("[ReplenishesWorker] Topics Id [%v] not exists. Something wrong", dequeuedItem.TopicId))
@@ -89,7 +89,7 @@ func (r *ReplenishesWorker) Push(items []entity.Item) (bool, error) {
 			continue
 		}
 		pfBuffer.inMemPq.Insert(item)
-		logger.Info(fmt.Sprintf("Insert item to prefetch buffer done: [%+v]", item))
+		logger.Info(fmt.Sprintf("Insert item to prefetch buffer done: Id [%v] TopicId :[%v] Priority [%v] Status [%v]", item.Id, item.TopicId, item.Priority, item.Status))
 	}
 	return true, nil
 }
@@ -107,6 +107,7 @@ func (r *ReplenishesWorker) Pop(topicId uint, count int) ([]entity.Item, error) 
 			logger.Info(fmt.Sprintf("Error poll item from prefetch buffer: [%v] ", err))
 			continue
 		}
+		logger.Info(fmt.Sprintf("Popped message Id [%v] Priority [%v] DeliveryAfter: [%v]", polled.Id, polled.Priority, polled.DeliverAfter))
 		result = append(result, polled)
 	}
 	return result, nil

@@ -31,7 +31,6 @@ func NewRouterGrpc(rpw IReplenishsesWorker,
 
 func (d *RouterGrpc) Publish(ctx context.Context, req *dps_pb.PublishReq) (*dps_pb.PublishRes, error) {
 	topic, err := d.topicProcessor.GetTopicByName(ctx, req.GetItem().TopicName)
-	fmt.Println("publish topic name:", req.GetItem().TopicName)
 	if err != nil {
 		logger.Error(fmt.Sprintf("GRPC/Publish occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetItem().TopicName))
 		return &dps_pb.PublishRes{}, status.New(codes.Internal, fmt.Sprintf("GRPC/Publish occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetItem().TopicName)).Err()

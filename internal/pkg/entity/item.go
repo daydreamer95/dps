@@ -4,7 +4,6 @@ import (
 	"context"
 	"dps/internal/pkg/common"
 	"dps/internal/pkg/storage"
-	"dps/logger"
 	"errors"
 	"fmt"
 	"time"
@@ -43,7 +42,6 @@ func (i *itemProcessor) CreateItem(ctx context.Context, item Item) (Item, error)
 		return Item{}, errors.New("invalid payload bytes size. Must < 100Kb")
 	}
 
-	logger.Info(fmt.Sprintf("item.DeliverAfter: %s", item.DeliverAfter))
 	if time.Now().After(item.DeliverAfter) {
 		return Item{}, errors.New(fmt.Sprintf("delivery after must be greater than now. Delivery time: %s", item.DeliverAfter.Format(time.RFC1123)))
 	}
