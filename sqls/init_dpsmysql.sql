@@ -15,7 +15,7 @@ CREATE TABLE `dps`.items (
     status varchar(30) NOT NULL,
     deliver_after TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     payload BLOB ,
-    meta_data BLOB,
+    meta_data mediumblob,
     lease_duration int(32),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

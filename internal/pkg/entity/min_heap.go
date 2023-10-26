@@ -105,11 +105,11 @@ func (m *MinHeap) heapifyDown(index int) {
 	rV := m.Data[rIndex]
 	v := m.Data[index]
 
-	if lV.Priority > rV.Priority && v.Priority > rV.Priority {
+	if lV.Priority >= rV.Priority && v.Priority >= rV.Priority {
 		m.Data[index] = rV
 		m.Data[rIndex] = v
 		m.heapifyDown(rIndex)
-	} else if rV.Priority > lV.Priority && v.Priority > lV.Priority {
+	} else if rV.Priority >= lV.Priority && v.Priority >= lV.Priority {
 		m.Data[index] = lV
 		m.Data[lIndex] = v
 		m.heapifyDown(lIndex)
@@ -126,7 +126,7 @@ func (m *MinHeap) heapifyUp(index int) {
 	v := m.Data[index]
 
 	//fmt.Printf("Compare %v > %v at pIndex %v and index %v? \n", parentV.Priority, v.Priority, p, index)
-	if parentV.Priority > v.Priority {
+	if parentV.Priority >= v.Priority {
 		//fmt.Println("Parent value:", parentV)
 		//fmt.Println("Index value:", v)
 
