@@ -17,6 +17,7 @@ type ItemStore struct {
 	Payload       []byte    `json:"payload"`
 	MetaData      []byte    `json:"metaData"`
 	LeaseDuration int32     `json:"lease_duration"`
+	LeaseAfter    time.Time `json:"-" gorm:"-"`
 }
 
 // TableName

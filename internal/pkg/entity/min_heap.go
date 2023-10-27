@@ -147,8 +147,3 @@ func leftChild(index int) int {
 func rightChild(index int) int {
 	return index*2 + 2
 }
-
-// start starts goroutines for item expiry check
-func (m *MinHeap) start() {
-
-}

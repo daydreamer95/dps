@@ -9,6 +9,7 @@ import (
 	"dps/logger"
 	"flag"
 	"fmt"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -27,8 +28,9 @@ func main() {
 
 	ctc := make(chan entity.Topic)
 	d := make(chan entity.Item)
+	expChan := make(chan entity.Item)
 	var r pkg.IReplenishsesWorker
-	r = pkg.NewReplenishesWorker(ctx, ctc, d)
+	r = pkg.NewReplenishesWorker(ctx, ctc, expChan, d)
 	go r.Start()
 
 	dequeWorker := pkg.NewDequeueWorker(ctx, d)
@@ -39,6 +41,18 @@ func main() {
 	srv := pkg.NewGrpcServer(r, topicProcessor, itemProcessor)
 	go srv.StartListenAndServer()
 
+	go func(processor entity.IItemProcessor) {
+		for {
+			select {
+			case expItem := <-expChan:
+				err := itemProcessor.Delete(context.TODO(), expItem.TopicId, expItem.Id)
+				if err != nil {
+					logger.Info("Delete fail expire item id [%v]", zap.String("item_id", expItem.Id))
+					return
+				}
+			}
+		}
+	}(itemProcessor)
 	go func() {
 		log.Print(http.ListenAndServe("localhost:6060", nil))
 	}()
