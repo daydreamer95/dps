@@ -154,8 +154,8 @@ func (r *ReplenishesWorker) mustStartLeaseWorker() {
 
 func (r *ReplenishesWorker) randomExpire(topicId uint) bool {
 	start := time.Now()
-	defer logger.Info(fmt.Sprintf("RandomExpire stop after %v", time.Since(start)))
-	logger.Info("Stop the world for random expire key")
+	defer logger.Debug(fmt.Sprintf("RandomExpire topicId %v stop after %v", topicId, time.Since(start)))
+	logger.Debug(fmt.Sprintf("Stop the world for random expire key for topic id %v", topicId))
 	const totalChecks = 20
 
 	expiredFound := 0

@@ -41,6 +41,7 @@ func main() {
 	srv := pkg.NewGrpcServer(r, topicProcessor, itemProcessor)
 	go srv.StartListenAndServer()
 
+	// process lease time
 	go func(processor entity.IItemProcessor) {
 		for {
 			select {
@@ -50,6 +51,7 @@ func main() {
 					logger.Info("Delete fail expire item id [%v]", zap.String("item_id", expItem.Id))
 					return
 				}
+				logger.Info("Delete expire message", zap.String("item_id", expItem.Id), zap.Int64("lease_after", expItem.LeaseAfter.Unix()))
 			}
 		}
 	}(itemProcessor)
