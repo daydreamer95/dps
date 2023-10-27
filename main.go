@@ -8,6 +8,9 @@ import (
 	"dps/logger"
 	"flag"
 	"fmt"
+	"log"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -34,6 +37,9 @@ func main() {
 	srv := pkg.NewGrpcServer(r, topicProcessor, itemProcessor)
 	go srv.StartListenAndServer()
 
+	go func() {
+		log.Print(http.ListenAndServe("localhost:6060", nil))
+	}()
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	go func() {

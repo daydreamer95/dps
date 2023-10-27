@@ -19,6 +19,8 @@ type Item = storage.ItemStore
 
 type IItemProcessor interface {
 	CreateItem(ctx context.Context, item Item) (Item, error)
+	Update(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error
+	Delete(ctx context.Context, topicId uint, assignedUniqueId string) error
 }
 
 type itemProcessor struct {
@@ -49,4 +51,20 @@ func (i *itemProcessor) CreateItem(ctx context.Context, item Item) (Item, error)
 	item.Status = ItemStatusInitialize
 	item, err = GetStore().CreateItems(ctx, item)
 	return item, err
+}
+
+func (i *itemProcessor) Update(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error {
+	err := GetStore().UpdateItemsStatusById(ctx, topicId, assignedUniqueId, status, metaData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (i *itemProcessor) Delete(ctx context.Context, topicId uint, assignedUniqueId string) error {
+	err := GetStore().DeleteItem(ctx, topicId, assignedUniqueId)
+	if err != nil {
+		return err
+	}
+	return nil
 }

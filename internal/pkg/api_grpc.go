@@ -91,12 +91,34 @@ func (d *RouterGrpc) Dequeue(ctx context.Context, req *dps_pb.DequeueReq) (*dps_
 	return &dps_pb.DequeueRes{Items: out}, nil
 }
 
-func (d *RouterGrpc) Ack(context.Context, *dps_pb.AckReq) (*empty.Empty, error) {
-	return nil, nil
+func (d *RouterGrpc) Ack(ctx context.Context, req *dps_pb.AckReq) (*empty.Empty, error) {
+	topic, err := d.topicProcessor.GetTopicByName(ctx, req.GetTopic())
+	if err != nil {
+		logger.Error(fmt.Sprintf("GRPC/Publish occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetTopic()))
+		return nil, status.New(codes.NotFound, err.Error()).Err()
+	}
+
+	err = d.itemProcessor.Delete(ctx, topic.Id, req.GetDpsAssignedUniqueId())
+	if err != nil {
+		logger.Error(fmt.Sprintf("GRPC/Publish ack error error [%v]. Notfound topic with id [%v]", err.Error(), req.GetDpsAssignedUniqueId()))
+		return nil, err
+	}
+	return &empty.Empty{}, nil
 }
 
-func (d *RouterGrpc) NAck(context.Context, *dps_pb.NAckReq) (*empty.Empty, error) {
-	return nil, nil
+func (d *RouterGrpc) NAck(ctx context.Context, req *dps_pb.NAckReq) (*empty.Empty, error) {
+	topic, err := d.topicProcessor.GetTopicByName(ctx, req.GetTopic())
+	if err != nil {
+		logger.Error(fmt.Sprintf("GRPC/NAck occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetTopic()))
+		return nil, status.New(codes.NotFound, err.Error()).Err()
+	}
+
+	err = d.itemProcessor.Update(ctx, topic.Id, req.GetDpsAssignedUniqueId(), entity.ItemStatusReadyToDeliver, req.GetMetaData())
+	if err != nil {
+		logger.Error(fmt.Sprintf("GRPC/NAck occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetTopic()))
+		return nil, status.New(codes.Internal, err.Error()).Err()
+	}
+	return &empty.Empty{}, nil
 }
 
 func (d *RouterGrpc) GetActiveTopics(ctx context.Context, req *empty.Empty) (*dps_pb.GetActiveTopicsRes, error) {
