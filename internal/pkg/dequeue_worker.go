@@ -41,16 +41,16 @@ func (d *DequeueWorker) Start() {
 
 }
 
-// PullItemFromSource first I will fake it
+// PullItemFromSource
 func (d *DequeueWorker) PullItemFromSource() ([]entity.Item, error) {
-	out, err := entity.GetStore().FetchItemReadyToDelivery(d.ctx, entity.ItemStatusInitialize)
+	out, err := entity.GetStore().GetItemByStatus(d.ctx, []string{entity.ItemStatusInitialize, entity.ItemStatusReadyToDeliver})
 	if err != nil {
 		return nil, err
 	}
 	if len(out) == 0 {
 		return out, nil
 	}
-	itemIds := make([]string, len(out))
+	itemIds := make([]string, 0, len(out))
 	for i := 0; i < len(out); i++ {
 		itemIds = append(itemIds, out[i].Id)
 	}

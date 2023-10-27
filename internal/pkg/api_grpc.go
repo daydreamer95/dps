@@ -115,7 +115,7 @@ func (d *RouterGrpc) NAck(ctx context.Context, req *dps_pb.NAckReq) (*empty.Empt
 
 	err = d.itemProcessor.UpdateStatusAndMetadata(ctx, topic.Id, req.GetDpsAssignedUniqueId(), entity.ItemStatusReadyToDeliver, req.GetMetaData())
 	if err != nil {
-		logger.Error(fmt.Sprintf("GRPC/NAck occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetTopic()))
+		logger.Error(fmt.Sprintf("GRPC/NAck NAck error [%v]", err.Error()))
 		return nil, status.New(codes.Internal, err.Error()).Err()
 	}
 	return &empty.Empty{}, nil

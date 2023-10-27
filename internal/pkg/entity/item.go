@@ -54,7 +54,7 @@ func (i *itemProcessor) CreateItem(ctx context.Context, item Item) (Item, error)
 }
 
 func (i *itemProcessor) UpdateStatusAndMetadata(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error {
-	err := GetStore().UpdateItemStatusAndMetaData(ctx, topicId, assignedUniqueId, status, metaData)
+	err := GetStore().UpdateItemStatusAndMetaData(ctx, topicId, status, assignedUniqueId, metaData)
 	if err != nil {
 		return err
 	}

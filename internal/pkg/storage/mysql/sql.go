@@ -27,7 +27,7 @@ func (s *Store) GetTopicById(ctx context.Context, id uint) (storage.TopicStore, 
 
 func (s *Store) GetTopicByName(ctx context.Context, name string) (storage.TopicStore, error) {
 	var topic storage.TopicStore
-	err := dbGet().WithContext(ctx).Where("name = ?", name).First(&topic).Error
+	err := dbGet().WithContext(ctx).Debug().Where("name = ?", name).First(&topic).Error
 	return topic, err
 }
 
@@ -55,11 +55,19 @@ func (s *Store) FetchItemReadyToDelivery(ctx context.Context, status string) ([]
 	return items, err
 }
 
+func (s *Store) GetItemByStatus(ctx context.Context, status []string) ([]storage.ItemStore, error) {
+	var items []storage.ItemStore
+	err := dbGet().WithContext(ctx).
+		Where("deliver_after <= ? and status IN (?)", time.Now(), status).
+		Find(&items).Error
+	return items, err
+}
+
 func (s *Store) DeleteItem(ctx context.Context, topicId uint, itemId string) error {
 	err := dbGet().WithContext(ctx).
 		Delete(&storage.ItemStore{
 			Id:      itemId,
-			TopicId: uint(topicId),
+			TopicId: topicId,
 		}).Error
 	return err
 }
@@ -68,8 +76,8 @@ func (s *Store) UpdateItemStatusAndMetaData(ctx context.Context, topicId uint, s
 	err := dbGet().WithContext(ctx).
 		Model(&storage.ItemStore{}).
 		Debug().
-		Where("topic_id = ? AND id = )", topicId, id).
-		Updates(map[string]interface{}{"status": status, "metaData": metaData}).Error
+		Where("topic_id = ? AND id = ? AND status != ?", topicId, id, "DELIVERED").
+		Updates(map[string]interface{}{"status": status, "meta_data": metaData}).Error
 	return err
 }
 
