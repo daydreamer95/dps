@@ -93,6 +93,8 @@ func (r *ReplenishesWorker) Start() {
 }
 
 func (r *ReplenishesWorker) Push(items []entity.Item) (bool, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	for i := 0; i < len(items); i++ {
 		pfBuffer := r.preBuffers[items[i].TopicId]
 		if pfBuffer == nil {
@@ -108,6 +110,8 @@ func (r *ReplenishesWorker) Push(items []entity.Item) (bool, error) {
 }
 
 func (r *ReplenishesWorker) Pop(topicId uint, count int) ([]entity.Item, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	pfBuffer := r.preBuffers[topicId]
 	if pfBuffer == nil {
 		return nil, common.ErrNotFoundTopic
@@ -157,6 +161,8 @@ func (r *ReplenishesWorker) randomExpire(topicId uint) bool {
 	defer logger.Debug(fmt.Sprintf("RandomExpire topicId %v stop after %v", topicId, time.Since(start)))
 	logger.Debug(fmt.Sprintf("Stop the world for random expire key for topic id %v", topicId))
 	const totalChecks = 20
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
 	expiredFound := 0
 	for i := 0; i < totalChecks; i++ {
@@ -166,7 +172,7 @@ func (r *ReplenishesWorker) randomExpire(topicId uint) bool {
 		}
 		item := r.preBuffers[topicId].inMemPq.Data[rand.Intn(sz)]
 
-		if item.LeaseAfter.After(time.Now()) {
+		if time.Now().After(item.LeaseAfter) {
 			r.preBuffers[topicId].inMemPq.Delete(item)
 			logger.Info(fmt.Sprintf("Random expire delete item [%v] cause lease time [%v]", item.Id, item.LeaseAfter))
 			r.expiredChan <- item

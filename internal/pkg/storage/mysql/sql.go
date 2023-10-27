@@ -29,7 +29,7 @@ func (s *Store) GetTopicById(ctx context.Context, id uint) (storage.TopicStore, 
 
 func (s *Store) GetTopicByName(ctx context.Context, name string) (storage.TopicStore, error) {
 	var topic storage.TopicStore
-	err := dbGet().WithContext(ctx).Debug().Where("name = ?", name).First(&topic).Error
+	err := dbGet().WithContext(ctx).Where("name = ?", name).First(&topic).Error
 	return topic, err
 }
 
