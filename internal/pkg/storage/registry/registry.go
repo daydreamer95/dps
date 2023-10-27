@@ -5,8 +5,6 @@ import (
 	"dps/internal/pkg/storage"
 	"dps/internal/pkg/storage/mysql"
 	"dps/logger"
-	"fmt"
-	"time"
 )
 
 var conf = &config.Config
@@ -33,10 +31,9 @@ func GetStore() storage.Store {
 	return storeFactorys[conf.Store.Driver].GetStorage()
 }
 
-// WaitStoreUp wait for db to go up
-func WaitStoreUp() {
+// MustWaitStoreUp wait for db to go up
+func MustWaitStoreUp() {
 	for err := GetStore().Ping(); err != nil; err = GetStore().Ping() {
-		logger.Info(fmt.Sprintf("wait store up: %v", err))
-		time.Sleep(3 * time.Second)
+		logger.FatalIfError(err)
 	}
 }

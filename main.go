@@ -5,6 +5,7 @@ import (
 	"dps/internal/pkg"
 	"dps/internal/pkg/config"
 	"dps/internal/pkg/entity"
+	"dps/internal/pkg/storage/registry"
 	"dps/logger"
 	"flag"
 	"fmt"
@@ -22,6 +23,7 @@ func main() {
 	flag.Parse()
 	ctx := context.Background()
 	config.MustLoadConfig(*confFile)
+	registry.MustWaitStoreUp()
 
 	ctc := make(chan entity.Topic)
 	d := make(chan entity.Item)

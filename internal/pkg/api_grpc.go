@@ -95,13 +95,13 @@ func (d *RouterGrpc) Ack(ctx context.Context, req *dps_pb.AckReq) (*empty.Empty,
 	topic, err := d.topicProcessor.GetTopicByName(ctx, req.GetTopic())
 	if err != nil {
 		logger.Error(fmt.Sprintf("GRPC/Publish occur error [%v]. Notfound topic with name [%v]", err.Error(), req.GetTopic()))
-		return nil, status.New(codes.NotFound, err.Error()).Err()
+		return nil, status.New(codes.NotFound, fmt.Sprintf("Topic name [%v] not found", req.GetTopic())).Err()
 	}
 
 	err = d.itemProcessor.Delete(ctx, topic.Id, req.GetDpsAssignedUniqueId())
 	if err != nil {
 		logger.Error(fmt.Sprintf("GRPC/Publish ack error error [%v]. Notfound topic with id [%v]", err.Error(), req.GetDpsAssignedUniqueId()))
-		return nil, err
+		return nil, status.New(codes.InvalidArgument, fmt.Sprintf("Ack item id [%v] fail cause: [%v]", req.GetDpsAssignedUniqueId(), err)).Err()
 	}
 	return &empty.Empty{}, nil
 }

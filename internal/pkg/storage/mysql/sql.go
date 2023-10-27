@@ -5,6 +5,8 @@ import (
 	"dps/internal/pkg/config"
 	"dps/internal/pkg/dps_util"
 	"dps/internal/pkg/storage"
+	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -64,27 +66,39 @@ func (s *Store) GetItemByStatus(ctx context.Context, status []string) ([]storage
 }
 
 func (s *Store) DeleteItem(ctx context.Context, topicId uint, itemId string) error {
-	err := dbGet().WithContext(ctx).
+	res := dbGet().WithContext(ctx).
 		Delete(&storage.ItemStore{
 			Id:      itemId,
 			TopicId: topicId,
-		}).Error
-	return err
+		})
+	if res.Error != nil {
+		return res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return errors.New(fmt.Sprintf("UpdateItemStatusAndMetaData: Failed to delete item or id not found:"))
+	}
+	return nil
 }
 
 func (s *Store) UpdateItemStatusAndMetaData(ctx context.Context, topicId uint, status string, id string, metaData []byte) error {
-	err := dbGet().WithContext(ctx).
+	result := dbGet().WithContext(ctx).
 		Model(&storage.ItemStore{}).
-		Debug().
 		Where("topic_id = ? AND id = ? AND status != ?", topicId, id, "DELIVERED").
-		Updates(map[string]interface{}{"status": status, "meta_data": metaData}).Error
-	return err
+		Updates(map[string]interface{}{"status": status, "meta_data": metaData})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New(fmt.Sprintf("UpdateItemStatusAndMetaData: Failed to update status item id [%v]:", id))
+	}
+	return nil
 }
 
 func (s *Store) UpdateItemsStatusByIds(ctx context.Context, ids []string, status string) error {
 	err := dbGet().WithContext(ctx).
 		Model(&storage.ItemStore{}).
-		Debug().
 		Where("id IN (?)", ids).
 		Update("status", status).Error
 	return err

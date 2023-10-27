@@ -24,25 +24,26 @@ func NewDequeueWorker(
 }
 
 func (d *DequeueWorker) Start() {
+	d.warmUp()
 	logger.Info("Dequeue Worker start polling job")
 	go func() {
 		//TODO: config this tick
 		for range time.Tick(time.Second * 1) {
-			items, err := d.PullItemFromSource()
+			items, err := d.pullItemFromSource()
 			if err != nil {
-				logger.Error(fmt.Sprintf("[DequeueWorker] PullItemFromSource err: %v", err))
+				logger.Error(fmt.Sprintf("[DequeueWorker] pullItemFromSource err: %v", err))
 				continue
 			}
-			for _, item := range items {
-				d.dequeuedChan <- item
+			for i := 0; i < len(items); i++ {
+				d.dequeuedChan <- items[i]
 			}
 		}
 	}()
 
 }
 
-// PullItemFromSource
-func (d *DequeueWorker) PullItemFromSource() ([]entity.Item, error) {
+// pullItemFromSource
+func (d *DequeueWorker) pullItemFromSource() ([]entity.Item, error) {
 	out, err := entity.GetStore().GetItemByStatus(d.ctx, []string{entity.ItemStatusInitialize, entity.ItemStatusReadyToDeliver})
 	if err != nil {
 		return nil, err
@@ -60,4 +61,15 @@ func (d *DequeueWorker) PullItemFromSource() ([]entity.Item, error) {
 		return nil, err
 	}
 	return out, nil
+}
+
+func (d *DequeueWorker) warmUp() {
+	logger.Info("Start warm up dequeue worker:")
+	out, err := entity.GetStore().GetItemByStatus(d.ctx, []string{entity.ItemStatusDelivered})
+	if err != nil {
+		return
+	}
+	for i := 0; i < len(out); i++ {
+		d.dequeuedChan <- out[i]
+	}
 }
