@@ -57,9 +57,8 @@ func (r *ReplenishesWorker) Start() {
 		logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topic [%+v]", topic))
 		pb := NewPrefetchBuffer(r.ctx, topic.Id)
 		r.preBuffers[topic.Id] = pb
+		r.mustStartLeaseWorker(topic.Id)
 	}
-
-	r.mustStartLeaseWorker()
 
 	logger.Info("[ReplenishesWorker] Start listen on updateTopicChan and dequeuedItemChan")
 	for {
@@ -75,6 +74,7 @@ func (r *ReplenishesWorker) Start() {
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] Init prefetch buffer topicname [%v]", updatedTopic))
 			pb := NewPrefetchBuffer(r.ctx, updatedTopic.Id)
 			r.preBuffers[updatedTopic.Id] = pb
+			r.mustStartLeaseWorker(updatedTopic.Id)
 			r.mu.Unlock()
 		case dequeuedItem := <-r.dequeuedItemChan:
 			logger.Info(fmt.Sprintf("[ReplenishesWorker] An item Id [%+v] has pull from db.", dequeuedItem.Id))
@@ -138,22 +138,19 @@ func (r *ReplenishesWorker) Pop(topicId uint, count int) ([]entity.Item, error) 
 	return result, nil
 }
 
-func (r *ReplenishesWorker) mustStartLeaseWorker() {
-	for topicId, _ := range r.preBuffers {
-		id := topicId
-		go func() {
-			for {
-				start := time.Now()
-				for i := 0; i < 10; i++ {
-					if !r.randomExpire(id) {
-						break
-					}
+func (r *ReplenishesWorker) mustStartLeaseWorker(topicId uint) {
+	go func() {
+		for {
+			start := time.Now()
+			for i := 0; i < 10; i++ {
+				if !r.randomExpire(topicId) {
+					break
 				}
-				diff := time.Since(start)
-				time.Sleep(expireInterval - diff)
 			}
-		}()
-	}
+			diff := time.Since(start)
+			time.Sleep(expireInterval - diff)
+		}
+	}()
 }
 
 func (r *ReplenishesWorker) randomExpire(topicId uint) bool {
@@ -174,7 +171,7 @@ func (r *ReplenishesWorker) randomExpire(topicId uint) bool {
 
 		if time.Now().After(item.LeaseAfter) {
 			r.preBuffers[topicId].inMemPq.Delete(item)
-			logger.Info(fmt.Sprintf("Random expire delete item [%v] cause lease time [%v]", item.Id, item.LeaseAfter))
+			//logger.Info(fmt.Sprintf("Random expire delete item [%v] cause lease time [%v]", item.Id, item.LeaseAfter))
 			r.expiredChan <- item
 			expiredFound++
 		}
