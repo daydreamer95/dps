@@ -55,15 +55,6 @@ func (s *Store) FetchItemReadyToDelivery(ctx context.Context, status string) ([]
 	return items, err
 }
 
-func (s *Store) UpdateItemsStatusById(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error {
-	err := dbGet().WithContext(ctx).
-		Model(&storage.ItemStore{}).
-		Debug().
-		Where("topic_id = ? AND id = )", topicId, assignedUniqueId).
-		Updates(map[string]interface{}{"status": status, "metaData": metaData}).Error
-	return err
-}
-
 func (s *Store) DeleteItem(ctx context.Context, topicId uint, itemId string) error {
 	err := dbGet().WithContext(ctx).
 		Delete(&storage.ItemStore{
@@ -82,12 +73,12 @@ func (s *Store) UpdateItemStatusAndMetaData(ctx context.Context, topicId uint, s
 	return err
 }
 
-func (s *Store) DeleteItem(ctx context.Context, topicId uint, itemId string) error {
+func (s *Store) UpdateItemsStatusByIds(ctx context.Context, ids []string, status string) error {
 	err := dbGet().WithContext(ctx).
-		Delete(&storage.ItemStore{
-			Id:      itemId,
-			TopicId: uint(topicId),
-		}).Error
+		Model(&storage.ItemStore{}).
+		Debug().
+		Where("id IN (?)", ids).
+		Update("status", status).Error
 	return err
 }
 

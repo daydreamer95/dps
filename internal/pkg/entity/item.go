@@ -19,7 +19,7 @@ type Item = storage.ItemStore
 
 type IItemProcessor interface {
 	CreateItem(ctx context.Context, item Item) (Item, error)
-	Update(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error
+	UpdateStatusAndMetadata(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error
 	Delete(ctx context.Context, topicId uint, assignedUniqueId string) error
 }
 
@@ -53,7 +53,7 @@ func (i *itemProcessor) CreateItem(ctx context.Context, item Item) (Item, error)
 	return item, err
 }
 
-func (i *itemProcessor) Update(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error {
+func (i *itemProcessor) UpdateStatusAndMetadata(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error {
 	err := GetStore().UpdateItemStatusAndMetaData(ctx, topicId, assignedUniqueId, status, metaData)
 	if err != nil {
 		return err
