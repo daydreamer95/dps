@@ -73,6 +73,24 @@ func (s *Store) DeleteItem(ctx context.Context, topicId uint, itemId string) err
 	return err
 }
 
+func (s *Store) UpdateItemStatusAndMetaData(ctx context.Context, topicId uint, status string, id string, metaData []byte) error {
+	err := dbGet().WithContext(ctx).
+		Model(&storage.ItemStore{}).
+		Debug().
+		Where("topic_id = ? AND id = )", topicId, id).
+		Updates(map[string]interface{}{"status": status, "metaData": metaData}).Error
+	return err
+}
+
+func (s *Store) DeleteItem(ctx context.Context, topicId uint, itemId string) error {
+	err := dbGet().WithContext(ctx).
+		Delete(&storage.ItemStore{
+			Id:      itemId,
+			TopicId: uint(topicId),
+		}).Error
+	return err
+}
+
 // SetDBConn sets db conn pool
 func SetDBConn(db *gorm.DB) {
 	sqldb, _ := db.DB()

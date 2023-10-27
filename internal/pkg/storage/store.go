@@ -10,6 +10,7 @@ type Store interface {
 	CreateItems(ctx context.Context, items ItemStore) (ItemStore, error)
 	GetActiveTopic(ctx context.Context) ([]TopicStore, error)
 	FetchItemReadyToDelivery(ctx context.Context, status string) ([]ItemStore, error)
-	UpdateItemsStatusById(ctx context.Context, topicId uint, assignedUniqueId string, status string, metaData []byte) error
+	UpdateItemsStatusByIds(ctx context.Context, ids []string, status string) error
+	UpdateItemStatusAndMetaData(ctx context.Context, topicId uint, status string, id string, metaData []byte) error
 	DeleteItem(ctx context.Context, topicId uint, itemId string) error
 }
