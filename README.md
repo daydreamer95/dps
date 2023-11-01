@@ -30,6 +30,8 @@ docker-compose up -d
 cd src && go mod tidy
 go run src/.
 
+Postman ( or import proto into postman, implement pb file):
+https://universal-space-463867.postman.co/workspace/My-Workspace~fd677b51-6a18-4275-84bb-ff9148e676f9/collection/64d3a5d891aa5fd3841c88de?action=share&creator=3191194
 
 Enjoy and have fun.
 Make file update soon
