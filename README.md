@@ -7,6 +7,15 @@ Thanks for sharing with community. Using golang to implement this. Same dependen
 in this applications
 This is just a small application without database sharding and monolith service contains Dequeue worker, Prefetch buffer, ack and nack worker all in one.
 
+## Description
+This application support:
+- Create topic
+- Create message to that topic with priority and lease time on queue
+- Message will be get from db into prefetch buffer with priority
+- Poll item with Dequeue api
+- Ack, NAck a message with modified metadata
+
+
 ## How to start
 
 ```
