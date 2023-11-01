@@ -1,12 +1,11 @@
 App:
   Host: localhost
-  Port: 8081
+  Port: 8080
 
 Store:
-  Driver: 'mysql'
-  Host: 'localhost'
-  User: 'root'
-  Password: 'root_password'
-  Port: 3306
-  Db: 'dps'
-  Schema: ''
+#  Driver: 'mysql'
+#  Host: ''
+#  User: ''
+#  Password: ''
+#  Port: 0
+#  Db: ''

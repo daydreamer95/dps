@@ -4,6 +4,7 @@ import (
 	"dps/logger"
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
@@ -18,7 +19,7 @@ const (
 // Store defines storage relevant info
 type Store struct {
 	Driver          string `yaml:"Driver" default:"mysql"`
-	Host            string `yaml:"Host"`
+	Host            string `yaml:"Host" default:"localhost"`
 	Port            int64  `yaml:"Port"`
 	User            string `yaml:"User"`
 	Password        string `yaml:"Password"`
@@ -50,6 +51,7 @@ type Type struct {
 
 // MustLoadConfig load config from env and file
 func MustLoadConfig(confFile string) {
+	godotenv.Load(".env")
 	loadFromEnv("", &Config)
 	if confFile != "" {
 		cont, err := ioutil.ReadFile(confFile)

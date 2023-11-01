@@ -35,6 +35,7 @@ message CreateTopicRes {
   string Name = 2;
   TopicActive Active = 3;
   string DeliveryPolicy = 4;
+  int32 LeaseDuration = 5;
 }
 
 message CommonRes {
@@ -54,6 +55,7 @@ message PublishRes {
   bytes Metadata = 5;
   int64 DeliverAfter = 6;
   string Status = 7;
+  int32 LeaseDuration = 8; // Calculate by time the message been lease from queue
 }
 
 message Item {
@@ -62,6 +64,7 @@ message Item {
   bytes Payload = 3; // immutable binary blob. Feel free to put what ever u want
   bytes Metadata = 4; // mutable binary blob. Feel free to put what ever u want
   int64 DeliverAfter = 5; // Timestamp where item should be dequeue
+  int32 LeaseDuration = 6; // Calculate by time the message been lease from queue
 }
 
 message DequeueReq {

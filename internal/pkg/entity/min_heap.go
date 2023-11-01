@@ -6,9 +6,9 @@ import (
 )
 
 type MinHeap struct {
-	mu     sync.Mutex
-	Length int
-	Data   []Item
+	rwMutex sync.RWMutex
+	Length  int
+	Data    []Item
 }
 
 func NewMinHeap() *MinHeap {
@@ -19,8 +19,8 @@ func NewMinHeap() *MinHeap {
 }
 
 func (m *MinHeap) Insert(msg Item) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	m.rwMutex.Lock()
+	defer m.rwMutex.Unlock()
 
 	m.Data = append(m.Data, msg)
 	m.heapifyUp(m.Length)
@@ -28,8 +28,8 @@ func (m *MinHeap) Insert(msg Item) {
 }
 
 func (m *MinHeap) Poll() (Item, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	m.rwMutex.Lock()
+	defer m.rwMutex.Unlock()
 
 	if m.Length == 0 {
 		//fmt.Println("ha")
@@ -53,8 +53,8 @@ func (m *MinHeap) Poll() (Item, error) {
 }
 
 func (m *MinHeap) Delete(msg Item) bool {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	m.rwMutex.Lock()
+	defer m.rwMutex.Unlock()
 
 	msgIdx := m.search(msg)
 	if msgIdx == -1 {
@@ -77,6 +77,14 @@ func (m *MinHeap) Delete(msg Item) bool {
 		m.heapifyDown(msgIdx)
 	}
 	return true
+}
+
+func (m *MinHeap) RLock() {
+	m.rwMutex.RLock()
+}
+
+func (m *MinHeap) RUnlock() {
+	m.rwMutex.RUnlock()
 }
 
 // search: Search item in MinHeap based on Item.id

@@ -10,14 +10,14 @@ This is just a small application without database sharding and monolith service 
 ## How to start
 
 ```
-# For dependency start and init script
+# For quick start please run this command
+docker build --tag dps .
 docker-compose up -d
 
-# dependency download
+#For local development
 cd src && go mod tidy
-
-# run application
 go run src/.
+
 
 Enjoy and have fun.
 Make file update soon

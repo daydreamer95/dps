@@ -37,11 +37,11 @@ func (i *itemProcessor) CreateItem(ctx context.Context, item Item) (Item, error)
 	}
 
 	//Validator
-	if !common.ValidateBytesSize(item.Payload, 10000) {
-		return Item{}, errors.New("invalid payload bytes size. Must < 10Kb")
-	}
-	if !common.ValidateBytesSize(item.MetaData, 100000) {
+	if !common.ValidateBytesSize(item.Payload, 100000) {
 		return Item{}, errors.New("invalid payload bytes size. Must < 100Kb")
+	}
+	if !common.ValidateBytesSize(item.MetaData, 65000) {
+		return Item{}, errors.New("invalid payload bytes size. Must < 65Kb")
 	}
 
 	if time.Now().After(item.DeliverAfter) {

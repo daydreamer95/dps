@@ -42,22 +42,22 @@ func (d *RouterGrpc) Publish(ctx context.Context, req *dps_pb.PublishReq) (*dps_
 		DeliverAfter:  time.Unix(req.Item.DeliverAfter, 0),
 		Payload:       req.Item.Payload,
 		MetaData:      req.Item.Metadata,
-		LeaseDuration: 60, // TODO: allow to push this config
+		LeaseDuration: req.Item.LeaseDuration,
 	}
 	createItem, err := d.itemProcessor.CreateItem(ctx, item)
 	if err != nil {
 		logger.Error(fmt.Sprintf("GRPC/Publish occur error [%v]", err.Error()))
 		return &dps_pb.PublishRes{}, status.New(codes.Internal, fmt.Sprintf("GRPC/Publish occur error [%v]", err.Error())).Err()
 	}
-
 	return &dps_pb.PublishRes{
-		Id:           createItem.Id,
-		TopicId:      uint32(createItem.TopicId),
-		Priority:     createItem.Priority,
-		Payload:      createItem.Payload,
-		Metadata:     createItem.MetaData,
-		DeliverAfter: createItem.DeliverAfter.Unix(),
-		Status:       createItem.Status,
+		Id:            createItem.Id,
+		TopicId:       uint32(createItem.TopicId),
+		Priority:      createItem.Priority,
+		Payload:       createItem.Payload,
+		Metadata:      createItem.MetaData,
+		DeliverAfter:  createItem.DeliverAfter.Unix(),
+		LeaseDuration: createItem.LeaseDuration,
+		Status:        createItem.Status,
 	}, nil
 
 }

@@ -41,7 +41,7 @@ func main() {
 	srv := pkg.NewGrpcServer(r, topicProcessor, itemProcessor)
 	go srv.StartListenAndServer()
 
-	// process lease time
+	// process lease message
 	go func(processor entity.IItemProcessor) {
 		for {
 			select {
@@ -55,9 +55,15 @@ func main() {
 			}
 		}
 	}(itemProcessor)
+
+	//Pprof http
 	go func() {
 		log.Print(http.ListenAndServe("localhost:6060", nil))
 	}()
+
+	// application handle panic
+	go handlePanic()
+
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
@@ -68,4 +74,10 @@ func main() {
 	logger.Info(fmt.Sprintf("Caught signal %v", sig))
 	// shutdown other goroutines gracefully
 	// close other resources
+}
+
+func handlePanic() {
+	if r := recover(); r != nil {
+		logger.Error(fmt.Sprintf("Panic occur, detail: %v", r))
+	}
 }
