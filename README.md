@@ -15,6 +15,9 @@ This application support:
 - Poll item with Dequeue api
 - Ack, NAck a message with modified metadata
 
+## Prerequisites
+golang 1.20
+docker, docker-compose for ultity
 
 ## How to start
 
