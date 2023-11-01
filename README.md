@@ -29,6 +29,8 @@ docker-compose up -d
 #For local development
 cd src && go mod tidy
 go run src/.
+Postman collection for test( or simply implement proto):
+https://www.postman.com/universal-space-463867/workspace/dps/collection/64d3a5d891aa5fd3841c88de?action=share&creator=3191194
 
 Enjoy and have fun.
 Make file update soon
