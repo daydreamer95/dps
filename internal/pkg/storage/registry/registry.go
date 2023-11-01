@@ -33,7 +33,7 @@ func GetStore() storage.Store {
 
 // MustWaitStoreUp wait for db to go up
 func MustWaitStoreUp() {
-	for err := GetStore().Ping(); err != nil; err = GetStore().Ping() {
+	for err := GetStore().Ping(); err != nil; {
 		logger.FatalIfError(err)
 	}
 }

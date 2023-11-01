@@ -20,7 +20,7 @@ const (
 type Store struct {
 	Driver          string `yaml:"Driver" default:"mysql"`
 	Host            string `yaml:"Host" default:"localhost"`
-	Port            int64  `yaml:"Port"`
+	Port            int64  `yaml:"Port" default:"8080"`
 	User            string `yaml:"User"`
 	Password        string `yaml:"Password"`
 	Db              string `yaml:"Db" default:"dps"`
@@ -36,7 +36,7 @@ func (s *Store) IsDB() bool {
 }
 
 type App struct {
-	Host string `yaml:"host" default:"127.0.0.1"`
+	Host string `yaml:"host" default:"localhost"`
 	Port int64  `yaml:"port" default:"8080"`
 }
 
